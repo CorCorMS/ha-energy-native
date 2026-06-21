@@ -1,5 +1,7 @@
 # HA Energy Native
 
+![HA Energy Native banner](https://raw.githubusercontent.com/CorCorMS/ha-energy-native/main/assets/repo-banner.png)
+
 [![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://www.hacs.xyz/)
 [![GitHub Release](https://img.shields.io/github/v/release/CorCorMS/ha-energy-native)](https://github.com/CorCorMS/ha-energy-native/releases)
 [![License](https://img.shields.io/github/license/CorCorMS/ha-energy-native)](https://github.com/CorCorMS/ha-energy-native/blob/main/LICENSE)

@@ -1,5 +1,8 @@
 # HA Energy Native
 
+[![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://www.hacs.xyz/)
+[![GitHub Release](https://img.shields.io/github/v/release/CorCorMS/ha-energy-native)](https://github.com/CorCorMS/ha-energy-native/releases)
+[![License](https://img.shields.io/github/license/CorCorMS/ha-energy-native)](https://github.com/CorCorMS/ha-energy-native/blob/main/LICENSE)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-FFDD00?logo=buymeacoffee&logoColor=000000)](https://buymeacoffee.com/corcor)
 
 HA Energy Native is a Home Assistant custom integration that adds a second native Energy dashboard entry to the sidebar and extends it with clone-specific behavior.

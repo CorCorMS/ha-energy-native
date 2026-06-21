@@ -42,6 +42,22 @@ Repository URL:
 
 [![Open your Home Assistant instance and open the HACS repository dialog with a specific repository pre-filled.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=CorCorMS&repository=ha-energy-native&category=integration)
 
+### What happens after HACS installation
+
+After installing through HACS and adding the integration:
+
+- Home Assistant adds a second Energy dashboard entry to the sidebar
+- the original Home Assistant Energy dashboard stays unchanged
+- the clone reuses your existing Energy dashboard configuration
+- your already configured sensors, statistics, source assignments, and stored Energy preferences continue to be used
+- you do not need to rebuild the Energy dashboard from scratch
+
+### HACS update behavior
+
+- New versions are delivered through GitHub releases
+- HACS detects versions from releases like `v0.1.0`
+- After updating in HACS, restart Home Assistant so the updated frontend/backend files are loaded
+
 ## Versioning
 
 - HACS uses GitHub releases for versions

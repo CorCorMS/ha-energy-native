@@ -9,6 +9,19 @@
 
 HA Energy Native is a Home Assistant custom integration that adds a second native Energy dashboard entry to the sidebar and extends it with clone-specific behavior.
 
+## Uses your existing Home Assistant Energy configuration
+
+HA Energy Native does **not** require you to rebuild your Energy dashboard from scratch.
+
+It reuses the existing configuration from the original Home Assistant Energy dashboard, including:
+
+- configured sensors
+- statistics
+- source assignments
+- stored Energy preferences
+
+The original Energy dashboard remains in place, and the clone uses the same underlying Energy setup.
+
 Current features:
 
 - second native Energy dashboard entry running in parallel to the original

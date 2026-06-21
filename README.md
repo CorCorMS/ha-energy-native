@@ -40,6 +40,12 @@ Repository URL:
 - Releases are published with tags like `v0.1.0`
 - Plain tags alone are not enough for clean HACS version handling
 
+## Support the project
+
+If you want to support development:
+
+[Buy me a coffee](https://buymeacoffee.com/corcor)
+
 ## Notes
 
 - The Home Assistant integration domain remains `ha_energy_native_clone`

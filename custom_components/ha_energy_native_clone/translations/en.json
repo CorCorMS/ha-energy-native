@@ -1,0 +1,23 @@
+{
+  "title": "HA Energy Native Clone",
+  "config": {
+    "step": {
+      "user": {
+        "title": "HA Energy Native Clone",
+        "description": "Create a sidebar clone of the native Energy dashboard.",
+        "data": {
+          "title": "Sidebar title",
+          "icon": "Sidebar icon",
+          "url_path": "URL path",
+          "admin_only": "Require admin"
+        }
+      }
+    },
+    "error": {
+      "single_instance_allowed": "Only one instance is supported."
+    },
+    "abort": {
+      "single_instance_allowed": "Only one instance is supported."
+    }
+  }
+}

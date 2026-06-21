@@ -18,6 +18,7 @@ Current features:
   - sources table
   - grid neutrality gauge
 - persistent clone settings stored in Home Assistant
+- reuses the existing sensors, statistics, and stored Energy dashboard configuration from the original Home Assistant Energy dashboard
 
 ## Repository type
 
@@ -58,6 +59,7 @@ If you want to support development:
 - The Home Assistant integration domain remains `ha_energy_native_clone`
 - The sidebar panel can run in parallel with the original Energy dashboard
 - This project builds on Home Assistant's Energy dashboard behavior and keeps the original dashboard untouched
+- Existing Energy dashboard setup stays in place: the sensors, source assignments, statistics, and saved Energy preferences from the original Home Assistant Energy dashboard continue to be used by this clone
 
 ## License
 

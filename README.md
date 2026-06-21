@@ -18,11 +18,27 @@ HACS category: `Integration`
 
 ## Install with HACS
 
+### As a custom repository
+
 1. Add this repository as a custom repository in HACS
 2. Select category `Integration`
 3. Install `HA Energy Native`
 4. Restart Home Assistant
 5. Add the integration
+
+Repository URL:
+
+`https://github.com/CorCorMS/ha-energy-native`
+
+### Direct HACS link
+
+[![Open your Home Assistant instance and open the HACS repository dialog with a specific repository pre-filled.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=CorCorMS&repository=ha-energy-native&category=integration)
+
+## Versioning
+
+- HACS uses GitHub releases for versions
+- Releases are published with tags like `v0.1.0`
+- Plain tags alone are not enough for clean HACS version handling
 
 ## Notes
 

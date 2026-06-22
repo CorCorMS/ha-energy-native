@@ -11,7 +11,6 @@ All notable changes to this project are documented in this file.
 
 ### Changed
 
-- updated the repository banner to the new dark showcase artwork provided for the project
 - bumped the frontend asset version again so the latest layout logic reloads reliably
 
 ## v0.1.8 - 2026-06-22

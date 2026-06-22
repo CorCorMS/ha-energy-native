@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented in this file.
 
+## v0.1.11 - 2026-06-23
+
+### Fixed
+
+- hardened the `Jetzt` loader so the cloned `now` view is re-applied whenever Home Assistant internally rebuilds or swaps the Energy views
+- added stricter validation of the active `Jetzt` view structure before accepting it as the clone layout
+- reduced cases where an older `Jetzt` variant could briefly reappear after internal view reloads
+
+### Changed
+
+- bumped the frontend asset version again so the stricter `Jetzt` loader is reliably reloaded by Home Assistant
+
 ## v0.1.10 - 2026-06-22
 
 ### Fixed

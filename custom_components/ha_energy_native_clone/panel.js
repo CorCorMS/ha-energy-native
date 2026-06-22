@@ -871,6 +871,34 @@
     return nowReplacementView;
   };
 
+  const isExpectedNowReplacementView = (view) => {
+    if (!view || view.path !== NOW_VIEW_PATH || view.type !== "sections") {
+      return false;
+    }
+
+    const cards = (view.sections || []).flatMap((section) => section.cards || []);
+    const hasPowerSources = cards.some(
+      (card) => card?.type === "power-sources-graph"
+    );
+    const hasPowerSankey = cards.some((card) => card?.type === "power-sankey");
+    const hasDistributionInSections = cards.some(
+      (card) => card?.type === "energy-distribution"
+    );
+    const hasDistributionInSidebar = (view.sidebar?.sections || [])
+      .flatMap((section) => section.cards || [])
+      .some((card) => card?.type === "energy-distribution");
+
+    if (!hasPowerSources || !hasPowerSankey) {
+      return false;
+    }
+
+    if (useCompactNowLayout()) {
+      return hasDistributionInSections && !view.sidebar;
+    }
+
+    return hasDistributionInSidebar;
+  };
+
   const applyNowReplacementToPanel = (panel) => {
     if (!isClonePanel(panel.panel) || !panel._lovelace?.config?.views) return;
 
@@ -906,6 +934,23 @@
       : "wide";
   };
 
+  const ensureNowReplacementOnPanel = (panel) => {
+    if (!isClonePanel(panel.panel) || !panel._lovelace?.config?.views) return;
+    const currentNowView = panel._lovelace.config.views.find(
+      (view) => view.path === NOW_VIEW_PATH
+    );
+    const nextLayout = useCompactNowLayout() ? "compact" : "wide";
+    if (
+      currentNowView &&
+      isExpectedNowReplacementView(currentNowView) &&
+      panel.__haEnergyNativeAppliedLayout === nextLayout
+    ) {
+      return;
+    }
+    applyNowReplacementToPanel(panel);
+    panel.requestUpdate?.();
+  };
+
   const patchPanelEnergy = () => {
     const tag = "ha-panel-energy";
     const Panel = customElements.get(tag);
@@ -920,7 +965,7 @@
         this.__haEnergyNativeOriginalViews = deepClone(
           this._lovelace.config.views
         );
-        applyNowReplacementToPanel(this);
+        ensureNowReplacementOnPanel(this);
       } catch (err) {
         console.warn("HA Energy Native: failed to build Jetzt replacement", err);
       }
@@ -935,8 +980,7 @@
         const nextLayout = useCompactNowLayout() ? "compact" : "wide";
         if (this.__haEnergyNativeAppliedLayout === nextLayout) return;
         try {
-          applyNowReplacementToPanel(this);
-          this.requestUpdate?.();
+          ensureNowReplacementOnPanel(this);
         } catch (err) {
           console.warn("HA Energy Native: failed to rebuild Jetzt layout", err);
         }
@@ -998,6 +1042,17 @@
         this.__haEnergyNativeResizeHandler = undefined;
       }
       return originalDisconnectedCallback?.apply(this, args);
+    };
+
+    const originalUpdated = Panel.prototype.updated;
+    Panel.prototype.updated = function (...args) {
+      originalUpdated?.apply(this, args);
+      try {
+        if (!isClonePanel(this.panel) || !this._lovelace?.config?.views) return;
+        ensureNowReplacementOnPanel(this);
+      } catch (err) {
+        console.warn("HA Energy Native: failed to enforce Jetzt loader", err);
+      }
     };
 
     const originalNavigateConfig = Panel.prototype._navigateConfig;

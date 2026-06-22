@@ -49,6 +49,7 @@
     window.location.pathname.includes(`/${CLONE_URL_PATH}/${NOW_VIEW_PATH}`);
   const useCompactNowLayout = () =>
     window.matchMedia?.("(max-width: 899px)")?.matches ?? window.innerWidth < 900;
+  const NOW_LAYOUT_MEDIA_QUERY = "(max-width: 899px)";
   const isCloneContext = (element) => {
     let current = element;
     while (current) {
@@ -870,6 +871,41 @@
     return nowReplacementView;
   };
 
+  const applyNowReplacementToPanel = (panel) => {
+    if (!isClonePanel(panel.panel) || !panel._lovelace?.config?.views) return;
+
+    if (!panel.__haEnergyNativeOriginalViews) {
+      panel.__haEnergyNativeOriginalViews = deepClone(
+        panel._lovelace.config.views
+      );
+    }
+
+    const sourceViews = deepClone(panel.__haEnergyNativeOriginalViews).filter(
+      (view) => view.path !== "test-clone"
+    );
+    const nowReplacementView = buildNowReplacementView(sourceViews);
+    if (!nowReplacementView) return;
+
+    const newViews = sourceViews.map((view) =>
+      view.path === NOW_VIEW_PATH ? nowReplacementView : view
+    );
+
+    panel._lovelace = {
+      ...panel._lovelace,
+      config: {
+        ...panel._lovelace.config,
+        views: newViews,
+      },
+      rawConfig: {
+        ...panel._lovelace.rawConfig,
+        views: newViews,
+      },
+    };
+    panel.__haEnergyNativeAppliedLayout = useCompactNowLayout()
+      ? "compact"
+      : "wide";
+  };
+
   const patchPanelEnergy = () => {
     const tag = "ha-panel-energy";
     const Panel = customElements.get(tag);
@@ -881,31 +917,87 @@
 
       try {
         if (!isClonePanel(this.panel) || !this._lovelace?.config?.views) return;
-
-        const views = this._lovelace.config.views;
-        const nowReplacementView = buildNowReplacementView(views);
-        if (!nowReplacementView) return;
-
-        const newViews = views
-          .filter((view) => view.path !== "test-clone")
-          .map((view) =>
-            view.path === NOW_VIEW_PATH ? nowReplacementView : view
-          );
-
-        this._lovelace = {
-          ...this._lovelace,
-          config: {
-            ...this._lovelace.config,
-            views: newViews,
-          },
-          rawConfig: {
-            ...this._lovelace.rawConfig,
-            views: newViews,
-          },
-        };
+        this.__haEnergyNativeOriginalViews = deepClone(
+          this._lovelace.config.views
+        );
+        applyNowReplacementToPanel(this);
       } catch (err) {
         console.warn("HA Energy Native: failed to build Jetzt replacement", err);
       }
+    };
+
+    const originalConnectedCallback = Panel.prototype.connectedCallback;
+    Panel.prototype.connectedCallback = function (...args) {
+      originalConnectedCallback?.apply(this, args);
+      if (this.__haEnergyNativeResizeHandler) return;
+      this.__haEnergyNativeResizeHandler = () => {
+        if (!isClonePanel(this.panel) || !this._lovelace?.config?.views) return;
+        const nextLayout = useCompactNowLayout() ? "compact" : "wide";
+        if (this.__haEnergyNativeAppliedLayout === nextLayout) return;
+        try {
+          applyNowReplacementToPanel(this);
+          this.requestUpdate?.();
+        } catch (err) {
+          console.warn("HA Energy Native: failed to rebuild Jetzt layout", err);
+        }
+      };
+      this.__haEnergyNativeMediaQuery =
+        window.matchMedia?.(NOW_LAYOUT_MEDIA_QUERY) || null;
+      this.__haEnergyNativeMediaHandler = () =>
+        this.__haEnergyNativeResizeHandler?.();
+      window.addEventListener("resize", this.__haEnergyNativeResizeHandler, {
+        passive: true,
+      });
+      window.addEventListener(
+        "orientationchange",
+        this.__haEnergyNativeResizeHandler,
+        { passive: true }
+      );
+      window.addEventListener("pageshow", this.__haEnergyNativeResizeHandler, {
+        passive: true,
+      });
+      document.addEventListener(
+        "visibilitychange",
+        this.__haEnergyNativeResizeHandler,
+        { passive: true }
+      );
+      this.__haEnergyNativeMediaQuery?.addEventListener?.(
+        "change",
+        this.__haEnergyNativeMediaHandler
+      );
+      this.__haEnergyNativeMediaQuery?.addListener?.(
+        this.__haEnergyNativeMediaHandler
+      );
+    };
+
+    const originalDisconnectedCallback = Panel.prototype.disconnectedCallback;
+    Panel.prototype.disconnectedCallback = function (...args) {
+      if (this.__haEnergyNativeResizeHandler) {
+        window.removeEventListener("resize", this.__haEnergyNativeResizeHandler);
+        window.removeEventListener(
+          "orientationchange",
+          this.__haEnergyNativeResizeHandler
+        );
+        window.removeEventListener(
+          "pageshow",
+          this.__haEnergyNativeResizeHandler
+        );
+        document.removeEventListener(
+          "visibilitychange",
+          this.__haEnergyNativeResizeHandler
+        );
+        this.__haEnergyNativeMediaQuery?.removeEventListener?.(
+          "change",
+          this.__haEnergyNativeMediaHandler
+        );
+        this.__haEnergyNativeMediaQuery?.removeListener?.(
+          this.__haEnergyNativeMediaHandler
+        );
+        this.__haEnergyNativeMediaQuery = undefined;
+        this.__haEnergyNativeMediaHandler = undefined;
+        this.__haEnergyNativeResizeHandler = undefined;
+      }
+      return originalDisconnectedCallback?.apply(this, args);
     };
 
     const originalNavigateConfig = Panel.prototype._navigateConfig;

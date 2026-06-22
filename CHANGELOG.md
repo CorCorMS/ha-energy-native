@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented in this file.
 
+## v0.1.9 - 2026-06-22
+
+### Fixed
+
+- improved the `Jetzt` layout switching so mobile and desktop breakpoints rebuild more reliably
+- added additional listeners for breakpoint changes, orientation changes, page visibility changes, and page restores
+
+### Changed
+
+- updated the repository banner to the new dark showcase artwork provided for the project
+- bumped the frontend asset version again so the latest layout logic reloads reliably
+
 ## v0.1.8 - 2026-06-22
 
 ### Fixed

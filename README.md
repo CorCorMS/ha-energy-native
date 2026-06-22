@@ -9,6 +9,32 @@
 
 HA Energy Native is a Home Assistant custom integration that adds a second native Energy dashboard entry to the sidebar and extends it with clone-specific behavior.
 
+## Current release highlights
+
+- native parallel Energy dashboard entry
+- enhanced Summary view with gross grid import labeling
+- live Now tab with power-focused cards
+- `Balkonkraftwerk` option inside the PV module configuration
+- keeps using the original Home Assistant Energy setup data
+
+## Screenshots
+
+Summary view with gross grid import labeling:
+
+![Summary view](https://raw.githubusercontent.com/CorCorMS/ha-energy-native/main/assets/screenshots/dashboard-summary.png)
+
+Now tab with live power cards:
+
+![Now tab live view](https://raw.githubusercontent.com/CorCorMS/ha-energy-native/main/assets/screenshots/now-live-tab.png)
+
+Sources table with gross import presentation:
+
+![Sources table](https://raw.githubusercontent.com/CorCorMS/ha-energy-native/main/assets/screenshots/sources-table.png)
+
+PV module dialog with `Balkonkraftwerk` mode:
+
+![Balkonkraftwerk mode](https://raw.githubusercontent.com/CorCorMS/ha-energy-native/main/assets/screenshots/balcony-mode-settings.png)
+
 ## Uses your existing Home Assistant Energy configuration
 
 HA Energy Native does **not** require you to rebuild your Energy dashboard from scratch.
@@ -32,6 +58,7 @@ Current features:
   - grid neutrality gauge
 - persistent clone settings stored in Home Assistant
 - reuses the existing sensors, statistics, and stored Energy dashboard configuration from the original Home Assistant Energy dashboard
+- current release includes the updated Summary and Now tab visuals shown above
 
 ## Repository type
 
@@ -74,7 +101,7 @@ After installing through HACS and adding the integration:
 ## Versioning
 
 - HACS uses GitHub releases for versions
-- Releases are published with tags like `v0.1.0`
+- Releases are published with tags like `v0.1.2`
 - Plain tags alone are not enough for clean HACS version handling
 
 ## Support the project

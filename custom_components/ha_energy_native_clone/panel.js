@@ -1,7 +1,21 @@
 (() => {
   const DOMAIN = "ha_energy_native_clone";
   const CLONE_URL_PATH = "energy-native-clone";
-
+  const NOW_VIEW_PATH = "now";
+  const ELECTRICITY_VIEW_PATH = "electricity";
+  const ENERGY_COLLECTION_KEY = "energy_dashboard";
+  const POWER_COLLECTION_KEY = "energy_dashboard_now";
+  const LARGE_SCREEN_CONDITION = {
+    condition: "view_columns",
+    min: 2,
+  };
+  const SMALL_SCREEN_CONDITION = {
+    condition: "view_columns",
+    max: 1,
+  };
+  const TEST_CLONE_PATH = "test-clone";
+  const NOW_REPLACEMENT_TITLE = "Jetzt";
+  const NOW_PRIMARY_CARD_TITLE = "Stromquellen";
   const LOCALIZE_FALLBACK = {
     grossGridLabel: {
       de: "Netzbezug brutto",
@@ -16,13 +30,91 @@
       en: "Enables gross grid import in the energy clone: exported energy is no longer subtracted from grid import there.",
     },
   };
+  const FLOW_RATE_TO_LMIN = {
+    "m³/h": 1000 / 60,
+    "m3/h": 1000 / 60,
+    "L/min": 1,
+    "l/min": 1,
+    "gal/min": 3.785411784,
+  };
+
+  const deepClone = (value) =>
+    value === undefined ? value : JSON.parse(JSON.stringify(value));
+
+  const isClonePanel = (panel) => panel?.url_path === CLONE_URL_PATH;
+  const isNowCloneRoute = () =>
+    window.location.pathname.includes(`/${CLONE_URL_PATH}/${NOW_VIEW_PATH}`);
+  const isCloneContext = (element) => {
+    let current = element;
+    while (current) {
+      if (
+        current.tagName?.toLowerCase?.() === "ha-panel-energy" &&
+        current.panel?.url_path === CLONE_URL_PATH
+      ) {
+        return true;
+      }
+      const root = current.getRootNode?.();
+      current = root?.host;
+    }
+    return false;
+  };
 
   const getLang = (hass) => hass?.locale?.language || hass?.language || "en";
 
   const t = (hass, key) =>
     LOCALIZE_FALLBACK[key]?.[getLang(hass)] || LOCALIZE_FALLBACK[key]?.en || key;
 
-  const formatNumber = (hass, value, options = {}) =>
+  const formatNumber = (value, maximumFractionDigits = 0) =>
+    new Intl.NumberFormat(undefined, { maximumFractionDigits }).format(value);
+
+  const normalizeValueByUnit = (value, unit) => {
+    if (value === undefined || value === null || Number.isNaN(value)) {
+      return undefined;
+    }
+    switch (unit) {
+      case "W":
+      case "w":
+        return value;
+      case "kW":
+      case "kw":
+        return value * 1000;
+      case "MW":
+      case "mw":
+        return value * 1000000;
+      default:
+        return value;
+    }
+  };
+
+  const getPowerFromState = (stateObj) => {
+    if (!stateObj) return undefined;
+    const value = Number.parseFloat(stateObj.state);
+    if (Number.isNaN(value)) return undefined;
+    return normalizeValueByUnit(
+      value,
+      stateObj.attributes?.unit_of_measurement || "W"
+    );
+  };
+
+  const getConfiguredPower = (states, entityId) =>
+    entityId ? getPowerFromState(states[entityId]) : undefined;
+
+  const getFlowRateFromState = (stateObj) => {
+    if (!stateObj) return undefined;
+    const value = Number.parseFloat(stateObj.state);
+    if (Number.isNaN(value)) return undefined;
+    return value;
+  };
+
+  const formatPower = (watts) => {
+    const value = Math.abs(watts || 0);
+    if (value >= 1000) {
+      return `${formatNumber(value / 1000, 3)} kW`;
+    }
+    return `${formatNumber(value, 0)} W`;
+  };
+
+  const adminFormatNumber = (hass, value, options = {}) =>
     new Intl.NumberFormat(undefined, {
       maximumFractionDigits: 2,
       ...options,
@@ -36,23 +128,17 @@
     }).format(value ?? 0);
 
   const calculateStatisticSumGrowth = (values) => {
-    if (!values) {
-      return null;
-    }
+    if (!values) return null;
     let growth = null;
     for (const value of values) {
-      if (value?.change === null || value?.change === undefined) {
-        continue;
-      }
+      if (value?.change === null || value?.change === undefined) continue;
       growth = growth === null ? value.change : growth + value.change;
     }
     return growth;
   };
 
   const getCloneSettings = async (hass) => {
-    if (!hass) {
-      return { solar_overrides: {} };
-    }
+    if (!hass) return { solar_overrides: {} };
     if (!window.__haEnergyCloneSettingsPromise) {
       window.__haEnergyCloneSettingsPromise = hass
         .callWS({ type: `${DOMAIN}/get_settings` })
@@ -78,23 +164,10 @@
   const anyBalconyEnabled = (data) => {
     const overrides = window.__haEnergyCloneSettings?.solar_overrides || {};
     return (data?.prefs?.energy_sources || []).some(
-      (source) => source.type === "solar" && overrides[source.stat_energy_from]?.balcony_mode
+      (source) =>
+        source.type === "solar" &&
+        overrides[source.stat_energy_from]?.balcony_mode
     );
-  };
-
-  const isCloneContext = (element) => {
-    let current = element;
-    while (current) {
-      if (
-        current.tagName?.toLowerCase?.() === "ha-panel-energy" &&
-        current.panel?.url_path === CLONE_URL_PATH
-      ) {
-        return true;
-      }
-      const root = current.getRootNode?.();
-      current = root?.host;
-    }
-    return false;
   };
 
   const getGridImportTotals = (data) => {
@@ -110,12 +183,9 @@
 
     for (const source of gridSources) {
       const statId = source.stat_energy_from;
-      const importEnergy = calculateStatisticSumGrowth(data?.stats?.[statId]) || 0;
-      energy += importEnergy;
-
-      const importEnergyCompare =
+      energy += calculateStatisticSumGrowth(data?.stats?.[statId]) || 0;
+      compareEnergy +=
         calculateStatisticSumGrowth(data?.statsCompare?.[statId]) || 0;
-      compareEnergy += importEnergyCompare;
 
       const costStat =
         source.stat_cost || data?.info?.cost_sensors?.[source.stat_energy_from];
@@ -130,18 +200,314 @@
     return { energy, cost, hasCost, compareEnergy, compareCost };
   };
 
+  const getEnergySourcesByType = (prefs) =>
+    (prefs?.energy_sources || []).reduce((acc, source) => {
+      if (!acc[source.type]) acc[source.type] = [];
+      acc[source.type].push(source);
+      return acc;
+    }, {});
+
+  const collectRelevantEntities = (prefs) => {
+    const entities = new Set();
+    (prefs?.energy_sources || []).forEach((source) => {
+      if (source.stat_rate) entities.add(source.stat_rate);
+      if (source.stat_soc) entities.add(source.stat_soc);
+      if (source.power_config) {
+        [
+          source.power_config.stat_rate,
+          source.power_config.stat_rate_inverted,
+          source.power_config.stat_rate_from,
+          source.power_config.stat_rate_to,
+        ]
+          .filter(Boolean)
+          .forEach((entityId) => entities.add(entityId));
+      }
+    });
+    return entities;
+  };
+
+  const computeTotalFlowRate = (sourceType, prefs, states) => {
+    const types = getEnergySourcesByType(prefs);
+    const sources = types[sourceType] || [];
+    let targetUnit;
+    let total = 0;
+
+    sources.forEach((source) => {
+      if (!source.stat_rate) return;
+      const stateObj = states[source.stat_rate];
+      const rawValue = getFlowRateFromState(stateObj);
+      const unit = stateObj?.attributes?.unit_of_measurement;
+      if (rawValue === undefined || !unit) return;
+
+      const safeValue = Math.max(0, rawValue);
+      if (!targetUnit) {
+        targetUnit = unit;
+        total += safeValue;
+        return;
+      }
+      if (unit === targetUnit) {
+        total += safeValue;
+        return;
+      }
+      const sourceFactor = FLOW_RATE_TO_LMIN[unit];
+      const targetFactor = FLOW_RATE_TO_LMIN[targetUnit];
+      if (sourceFactor !== undefined && targetFactor !== undefined) {
+        total += (safeValue * sourceFactor) / targetFactor;
+        return;
+      }
+      total += safeValue;
+    });
+
+    return {
+      value: Math.max(0, total),
+      unit: targetUnit || (sourceType === "gas" ? "m³/h" : "m³/h"),
+    };
+  };
+
+  const computeLiveMetrics = (hass, prefs) => {
+    if (!hass || !prefs) return null;
+    const states = hass.states || {};
+    const types = getEnergySourcesByType(prefs);
+
+    let solar = 0;
+    (types.solar || []).forEach((source) => {
+      if (!source.stat_rate) return;
+      const value = getPowerFromState(states[source.stat_rate]);
+      if (value > 0) solar += value;
+    });
+
+    let fromGrid = 0;
+    let toGrid = 0;
+    (types.grid || []).forEach((source) => {
+      if (source.power_config) {
+        const fromValue = getConfiguredPower(
+          states,
+          source.power_config.stat_rate_from
+        );
+        const toValue = getConfiguredPower(
+          states,
+          source.power_config.stat_rate_to
+        );
+        const invertedValue = getConfiguredPower(
+          states,
+          source.power_config.stat_rate_inverted
+        );
+        if (fromValue > 0) fromGrid += fromValue;
+        if (toValue > 0) toGrid += toValue;
+        if (invertedValue > 0) toGrid += invertedValue;
+        else if (invertedValue < 0) fromGrid += Math.abs(invertedValue);
+      }
+      if (!source.stat_rate) return;
+      const value = getPowerFromState(states[source.stat_rate]);
+      if (value > 0) fromGrid += value;
+      else if (value < 0) toGrid += Math.abs(value);
+    });
+
+    let netBattery = 0;
+    let batterySoc = null;
+    (types.battery || []).forEach((source) => {
+      if (source.stat_rate) {
+        netBattery += getPowerFromState(states[source.stat_rate]) || 0;
+      }
+      if (source.stat_soc && batterySoc === null) {
+        const socValue = Number.parseFloat(states[source.stat_soc]?.state);
+        if (!Number.isNaN(socValue)) batterySoc = socValue;
+      }
+    });
+
+    const fromBattery = netBattery > 0 ? netBattery : 0;
+    const toBattery = netBattery < 0 ? Math.abs(netBattery) : 0;
+    const home = Math.max(0, fromGrid + solar + fromBattery - toGrid - toBattery);
+    const gas = computeTotalFlowRate("gas", prefs, states);
+    const water = computeTotalFlowRate("water", prefs, states);
+
+    return {
+      solar,
+      fromGrid,
+      toGrid,
+      fromBattery,
+      toBattery,
+      batterySoc,
+      home,
+      gas,
+      water,
+      lowCarbon: solar,
+    };
+  };
+
+  const ensureLiveValueSpan = (circle, beforeNode) => {
+    let valueEl = circle.querySelector(".ha-energy-native-live-value");
+    if (!valueEl) {
+      valueEl = document.createElement("span");
+      valueEl.className = "ha-energy-native-live-value";
+      valueEl.style.display = "block";
+      valueEl.style.whiteSpace = "nowrap";
+      if (beforeNode) circle.insertBefore(valueEl, beforeNode);
+      else circle.appendChild(valueEl);
+    }
+    return valueEl;
+  };
+
+  const setSimpleCircleValue = (container, text) => {
+    if (!container) return;
+    const circle = container.querySelector(".circle");
+    if (!circle) return;
+    const icon = circle.querySelector("ha-svg-icon, a.circle > ha-svg-icon");
+    const overlay = circle.querySelector("svg");
+
+    Array.from(circle.childNodes).forEach((node) => {
+      if (
+        node === icon ||
+        node === overlay ||
+        (node.nodeType === 1 &&
+          node.classList?.contains("ha-energy-native-live-value"))
+      ) {
+        return;
+      }
+      node.remove();
+    });
+
+    const valueEl = ensureLiveValueSpan(circle, overlay || null);
+    valueEl.textContent = text;
+  };
+
+  const setGridCircleValues = (container, returnedText, importedText) => {
+    if (!container) return;
+    const circle = container.querySelector(".circle");
+    if (!circle) return;
+    let returnSpan = circle.querySelector(".return");
+    let consumptionSpan = circle.querySelector(".consumption");
+    if (!returnSpan) {
+      returnSpan = document.createElement("span");
+      returnSpan.className = "return";
+      circle.appendChild(returnSpan);
+    }
+    if (!consumptionSpan) {
+      consumptionSpan = document.createElement("span");
+      consumptionSpan.className = "consumption";
+      circle.appendChild(consumptionSpan);
+    }
+    returnSpan.textContent = returnedText;
+    returnSpan.style.display = "";
+    consumptionSpan.textContent = importedText;
+  };
+
+  const patchCardStateUpdates = (Ctor) => {
+    if (!Ctor || Ctor.prototype.__haEnergyNativeLiveStatePatched) return;
+
+    const originalShouldUpdate = Ctor.prototype.shouldUpdate;
+    Ctor.prototype.shouldUpdate = function (changedProps) {
+      const originalResult = originalShouldUpdate
+        ? originalShouldUpdate.call(this, changedProps)
+        : true;
+
+      if (originalResult || !isNowCloneRoute() || !changedProps?.has?.("hass")) {
+        return originalResult;
+      }
+
+      const oldHass = changedProps.get("hass");
+      if (!oldHass || !this.hass || !this._data?.prefs) return originalResult;
+
+      const entities = collectRelevantEntities(this._data.prefs);
+      for (const entityId of entities) {
+        if (oldHass.states?.[entityId] !== this.hass.states?.[entityId]) {
+          return true;
+        }
+      }
+      return originalResult;
+    };
+
+    Ctor.prototype.__haEnergyNativeLiveStatePatched = true;
+  };
+
+  const patchEnergyDistributionCard = () => {
+    const tag = "hui-energy-distribution-card";
+    const Ctor = customElements.get(tag);
+    if (!Ctor || Ctor.prototype.__haEnergyNativeLivePatched) return;
+
+    patchCardStateUpdates(Ctor);
+
+    const originalUpdated = Ctor.prototype.updated;
+    Ctor.prototype.updated = function (...args) {
+      originalUpdated?.apply(this, args);
+      if (!isNowCloneRoute() || !this._data?.prefs || !this.hass) return;
+
+      const live = computeLiveMetrics(this.hass, this._data.prefs);
+      const root = this.renderRoot;
+      if (!live || !root) return;
+
+      const firstTopCircle = root.querySelector(
+        ".row:first-child .circle-container:first-child"
+      );
+      setSimpleCircleValue(firstTopCircle, formatPower(live.lowCarbon));
+      setSimpleCircleValue(
+        root.querySelector(".circle-container.solar"),
+        formatPower(live.solar)
+      );
+      setSimpleCircleValue(
+        root.querySelector(".circle-container.gas"),
+        `${formatNumber(live.gas.value, 1)} ${live.gas.unit}`
+      );
+      setSimpleCircleValue(
+        root.querySelector(".circle-container.water:not(.bottom)"),
+        `${formatNumber(live.water.value, 1)} ${live.water.unit}`
+      );
+      setSimpleCircleValue(
+        root.querySelector(".circle-container.water.bottom"),
+        `${formatNumber(live.water.value, 1)} ${live.water.unit}`
+      );
+      setSimpleCircleValue(
+        root.querySelector(".circle-container.home"),
+        formatPower(live.home)
+      );
+
+      setGridCircleValues(
+        root.querySelector(".circle-container.grid"),
+        `${live.toGrid > 0 ? "\u2190 " : ""}${formatPower(live.toGrid || 0)}`,
+        `${live.fromGrid > 0 ? "\u2192 " : ""}${formatPower(
+          live.fromGrid || 0
+        )}`
+      );
+
+      const batteryContainer = root.querySelector(".circle-container.battery");
+      if (batteryContainer) {
+        const inEl = batteryContainer.querySelector(".battery-in");
+        const outEl = batteryContainer.querySelector(".battery-out");
+        if (inEl) inEl.textContent = `↓ ${formatPower(live.toBattery)}`;
+        if (outEl) outEl.textContent = `↑ ${formatPower(live.fromBattery)}`;
+      }
+
+      const lineSvg = root.querySelector(".lines svg");
+      if (lineSvg) {
+        lineSvg.querySelectorAll("circle.grid").forEach((el) => {
+          el.style.display = live.fromGrid > 0 ? "" : "none";
+        });
+        lineSvg.querySelectorAll("circle.return").forEach((el) => {
+          el.style.display = live.toGrid > 0 ? "" : "none";
+        });
+        lineSvg.querySelectorAll("circle.solar").forEach((el) => {
+          el.style.display = live.solar > 0 ? "" : "none";
+        });
+        lineSvg.querySelectorAll("circle.gas").forEach((el) => {
+          el.style.display = live.gas.value > 0 ? "" : "none";
+        });
+        lineSvg.querySelectorAll("circle.water").forEach((el) => {
+          el.style.display = live.water.value > 0 ? "" : "none";
+        });
+      }
+    };
+
+    Ctor.prototype.__haEnergyNativeLivePatched = true;
+  };
+
   const patchSourcesTableCard = () => {
     const tag = "hui-energy-sources-table-card";
     const Card = customElements.get(tag);
-    if (!Card || Card.prototype.__haEnergyClonePatched) {
-      return;
-    }
+    if (!Card || Card.prototype.__haEnergyClonePatched) return;
 
     const originalUpdated = Card.prototype.updated;
     Card.prototype.updated = function (...args) {
-      if (originalUpdated) {
-        originalUpdated.apply(this, args);
-      }
+      originalUpdated?.apply(this, args);
       try {
         if (!window.__haEnergyCloneSettingsPromise && this.hass) {
           getCloneSettings(this.hass).then(() => this.requestUpdate?.());
@@ -151,9 +517,7 @@
         }
 
         const root = this.renderRoot || this.shadowRoot;
-        if (!root) {
-          return;
-        }
+        if (!root) return;
 
         const rows = [...root.querySelectorAll("tbody tr")];
         const originalGridLabel =
@@ -169,26 +533,26 @@
           );
         });
 
-        if (!row) {
-          return;
-        }
+        if (!row) return;
 
         const totals = getGridImportTotals(this._data);
         const compare = !!this._data?.statsCompare;
-        const numericCells = [...row.querySelectorAll("td.mdc-data-table__cell--numeric")];
+        const numericCells = [
+          ...row.querySelectorAll("td.mdc-data-table__cell--numeric"),
+        ];
         const showCosts = numericCells.length === (compare ? 4 : 2);
 
         row.querySelector("th").textContent = t(this.hass, "grossGridLabel");
 
         if (compare && showCosts) {
-          numericCells[0].textContent = `${formatNumber(
+          numericCells[0].textContent = `${adminFormatNumber(
             this.hass,
             totals.compareEnergy
           )} kWh`;
           numericCells[1].textContent = totals.hasCost
             ? formatCurrency(this.hass, totals.compareCost)
             : "";
-          numericCells[2].textContent = `${formatNumber(
+          numericCells[2].textContent = `${adminFormatNumber(
             this.hass,
             totals.energy
           )} kWh`;
@@ -196,16 +560,16 @@
             ? formatCurrency(this.hass, totals.cost)
             : "";
         } else if (compare) {
-          numericCells[0].textContent = `${formatNumber(
+          numericCells[0].textContent = `${adminFormatNumber(
             this.hass,
             totals.compareEnergy
           )} kWh`;
-          numericCells[1].textContent = `${formatNumber(
+          numericCells[1].textContent = `${adminFormatNumber(
             this.hass,
             totals.energy
           )} kWh`;
         } else if (showCosts) {
-          numericCells[0].textContent = `${formatNumber(
+          numericCells[0].textContent = `${adminFormatNumber(
             this.hass,
             totals.energy
           )} kWh`;
@@ -213,7 +577,7 @@
             ? formatCurrency(this.hass, totals.cost)
             : "";
         } else if (numericCells[0]) {
-          numericCells[0].textContent = `${formatNumber(
+          numericCells[0].textContent = `${adminFormatNumber(
             this.hass,
             totals.energy
           )} kWh`;
@@ -229,15 +593,11 @@
   const patchGridGaugeCard = () => {
     const tag = "hui-energy-grid-neutrality-gauge-card";
     const Card = customElements.get(tag);
-    if (!Card || Card.prototype.__haEnergyClonePatched) {
-      return;
-    }
+    if (!Card || Card.prototype.__haEnergyClonePatched) return;
 
     const originalUpdated = Card.prototype.updated;
     Card.prototype.updated = function (...args) {
-      if (originalUpdated) {
-        originalUpdated.apply(this, args);
-      }
+      originalUpdated?.apply(this, args);
       try {
         if (!window.__haEnergyCloneSettingsPromise && this.hass) {
           getCloneSettings(this.hass).then(() => this.requestUpdate?.());
@@ -247,19 +607,15 @@
         }
 
         const root = this.renderRoot || this.shadowRoot;
-        if (!root) {
-          return;
-        }
+        if (!root) return;
 
         const gauge = root.querySelector("ha-gauge");
         const name = root.querySelector(".name");
-        if (!gauge || !name) {
-          return;
-        }
+        if (!gauge || !name) return;
 
         const totals = getGridImportTotals(this._data);
         gauge.value = totals.energy > 0 ? -1 : 0;
-        gauge.valueText = formatNumber(this.hass, totals.energy);
+        gauge.valueText = adminFormatNumber(this.hass, totals.energy);
         gauge.label = "kWh";
         name.textContent = t(this.hass, "grossGridLabel");
       } catch (err) {
@@ -272,14 +628,10 @@
 
   const injectBalconyCheckbox = (dialog) => {
     const root = dialog.renderRoot || dialog.shadowRoot;
-    if (!root) {
-      return;
-    }
+    if (!root) return;
 
     const footer = root.querySelector("ha-dialog-footer");
-    if (!footer?.parentElement) {
-      return;
-    }
+    if (!footer?.parentElement) return;
 
     let wrapper = root.querySelector("[data-ha-energy-clone-balcony]");
     if (!wrapper) {
@@ -324,9 +676,7 @@
   const patchSolarDialog = () => {
     const tag = "dialog-energy-solar-settings";
     const Dialog = customElements.get(tag);
-    if (!Dialog || Dialog.prototype.__haEnergyClonePatched) {
-      return;
-    }
+    if (!Dialog || Dialog.prototype.__haEnergyClonePatched) return;
 
     const originalShowDialog = Dialog.prototype.showDialog;
     Dialog.prototype.showDialog = async function (...args) {
@@ -346,9 +696,7 @@
 
     const originalUpdated = Dialog.prototype.updated;
     Dialog.prototype.updated = function (...args) {
-      if (originalUpdated) {
-        originalUpdated.apply(this, args);
-      }
+      originalUpdated?.apply(this, args);
       injectBalconyCheckbox(this);
     };
 
@@ -360,9 +708,7 @@
 
       await originalSave.apply(this, args);
 
-      if (!this.hass || !currentStat) {
-        return;
-      }
+      if (!this.hass || !currentStat) return;
 
       try {
         const result = await this.hass.callWS({
@@ -380,20 +726,142 @@
     Dialog.prototype.__haEnergyClonePatched = true;
   };
 
-  const patchWhenDefined = (tag, patcher) => {
-    customElements.whenDefined(tag).then(() => {
-      try {
-        patcher();
-      } catch (err) {
-        console.warn(`Failed to patch ${tag}`, err);
-      }
-    });
+  const buildNowReplacementView = (views) => {
+    const nowView = views.find((view) => view.path === NOW_VIEW_PATH);
+    const electricityView = views.find(
+      (view) => view.path === ELECTRICITY_VIEW_PATH
+    );
+    if (!electricityView || !nowView) return null;
+
+    const hasWaterFlowSankey = (nowView.sections || []).some((section) =>
+      (section.cards || []).some((card) => card?.type === "water-flow-sankey")
+    );
+
+    const distributionCard = {
+      title: "Energieverteilung",
+      type: "energy-distribution",
+      collection_key: ENERGY_COLLECTION_KEY,
+    };
+
+    const nowReplacementView = deepClone(electricityView);
+    nowReplacementView.path = NOW_VIEW_PATH;
+    nowReplacementView.title = NOW_REPLACEMENT_TITLE;
+    nowReplacementView.type = "sections";
+    nowReplacementView.max_columns = 4;
+    nowReplacementView.dense_section_placement = true;
+    nowReplacementView.badges = deepClone(nowView.badges || []);
+    nowReplacementView.footer = undefined;
+    nowReplacementView.sections = [
+      {
+        type: "grid",
+        column_span: 1,
+        cards: [distributionCard],
+        visibility: [SMALL_SCREEN_CONDITION],
+      },
+      {
+        type: "grid",
+        column_span: 3,
+        cards: [
+          {
+            title: NOW_PRIMARY_CARD_TITLE,
+            type: "power-sources-graph",
+            collection_key: POWER_COLLECTION_KEY,
+            grid_options: { columns: 36 },
+          },
+          {
+            title: "Aktueller Leistungsfluss",
+            type: "power-sankey",
+            collection_key: POWER_COLLECTION_KEY,
+            grid_options: { columns: 36 },
+          },
+          {
+            title: "Wasserfluss",
+            type: "water-flow-sankey",
+            collection_key: POWER_COLLECTION_KEY,
+            grid_options: { columns: 36 },
+          },
+        ].filter((card) =>
+          card.type === "water-flow-sankey" ? hasWaterFlowSankey : true
+        ),
+      },
+    ];
+    nowReplacementView.sidebar = {
+      sections: [{ cards: [distributionCard] }],
+      visibility: [LARGE_SCREEN_CONDITION],
+      content_label: NOW_PRIMARY_CARD_TITLE,
+      sidebar_label: "Energieverteilung",
+    };
+    delete nowReplacementView.strategy;
+    delete nowReplacementView.cards;
+
+    return nowReplacementView;
   };
 
-  patchWhenDefined("hui-energy-sources-table-card", patchSourcesTableCard);
-  patchWhenDefined(
+  const patchPanelEnergy = () => {
+    const tag = "ha-panel-energy";
+    const Panel = customElements.get(tag);
+    if (!Panel || Panel.prototype.__haEnergyNativeTestClonePatched) return;
+
+    const originalSetLovelace = Panel.prototype._setLovelace;
+    Panel.prototype._setLovelace = async function (...args) {
+      await originalSetLovelace.apply(this, args);
+
+      try {
+        if (!isClonePanel(this.panel) || !this._lovelace?.config?.views) return;
+
+        const views = this._lovelace.config.views;
+        const nowReplacementView = buildNowReplacementView(views);
+        if (!nowReplacementView) return;
+
+        const newViews = views
+          .filter((view) => view.path !== TEST_CLONE_PATH)
+          .map((view) =>
+            view.path === NOW_VIEW_PATH ? nowReplacementView : view
+          );
+
+        this._lovelace = {
+          ...this._lovelace,
+          config: {
+            ...this._lovelace.config,
+            views: newViews,
+          },
+          rawConfig: {
+            ...this._lovelace.rawConfig,
+            views: newViews,
+          },
+        };
+      } catch (err) {
+        console.warn("HA Energy Native: failed to build Test Clone tab", err);
+      }
+    };
+
+    const originalNavigateConfig = Panel.prototype._navigateConfig;
+    Panel.prototype._navigateConfig = function (...args) {
+      return originalNavigateConfig?.apply(this, args);
+    };
+
+    Panel.prototype.__haEnergyNativeTestClonePatched = true;
+  };
+
+  const patchEverything = () => {
+    try {
+      patchPanelEnergy();
+      patchEnergyDistributionCard();
+      patchSourcesTableCard();
+      patchGridGaugeCard();
+      patchSolarDialog();
+    } catch (err) {
+      console.warn("HA Energy Native: patch cycle failed", err);
+    }
+  };
+
+  [
+    "ha-panel-energy",
+    "hui-energy-distribution-card",
+    "hui-energy-sources-table-card",
     "hui-energy-grid-neutrality-gauge-card",
-    patchGridGaugeCard
-  );
-  patchWhenDefined("dialog-energy-solar-settings", patchSolarDialog);
+    "dialog-energy-solar-settings",
+  ].forEach((tag) => {
+    customElements.whenDefined(tag).then(() => patchEverything());
+  });
 })();

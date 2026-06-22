@@ -11,6 +11,7 @@ from .const import (
     DEFAULT_ICON,
     DEFAULT_TITLE,
     DEFAULT_URL_PATH,
+    PANEL_STATIC_PATH,
     PANEL_STATIC_URL,
 )
 
@@ -26,13 +27,14 @@ def _panel_options(config: dict | None) -> dict:
 
 
 async def async_register_panel(hass: HomeAssistant, config: dict | None = None) -> None:
-    """Register static assets and sidebar panel."""
+    """Register sidebar panel as a native Energy clone with isolated test-view hooks."""
 
     options = _panel_options(config)
     panel_path = Path(__file__).with_name("panel.js")
-
     await hass.http.async_register_static_paths(
-        [StaticPathConfig(PANEL_STATIC_URL, str(panel_path), cache_headers=False)]
+        [
+            StaticPathConfig(PANEL_STATIC_PATH, str(panel_path), cache_headers=False),
+        ]
     )
     frontend.add_extra_js_url(hass, PANEL_STATIC_URL)
 

@@ -1,0 +1,23 @@
+{
+  "title": "HA Energy Native Clone",
+  "config": {
+    "step": {
+      "user": {
+        "title": "HA Energy Native Clone",
+        "description": "建立原生能源儀表板的側邊欄複製。",
+        "data": {
+          "title": "側邊欄標題",
+          "icon": "側邊欄圖示",
+          "url_path": "URL 路徑",
+          "admin_only": "僅限管理員"
+        }
+      }
+    },
+    "error": {
+      "single_instance_allowed": "僅支援一個實例。"
+    },
+    "abort": {
+      "single_instance_allowed": "僅支援一個實例。"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "title": "HA Energy Native Clone",
+  "config": {
+    "step": {
+      "user": {
+        "title": "HA Energy Native Clone",
+        "description": "Yerel Enerji panosunun kenar çubuğu klonunu oluşturur.",
+        "data": {
+          "title": "Kenar çubuğu başlığı",
+          "icon": "Kenar çubuğu simgesi",
+          "url_path": "URL yolu",
+          "admin_only": "Yalnızca yöneticiler"
+        }
+      }
+    },
+    "error": {
+      "single_instance_allowed": "Yalnızca tek bir örnek desteklenir."
+    },
+    "abort": {
+      "single_instance_allowed": "Yalnızca tek bir örnek desteklenir."
+    }
+  }
+}

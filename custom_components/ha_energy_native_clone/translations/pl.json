@@ -1,0 +1,23 @@
+{
+  "title": "HA Energy Native Clone",
+  "config": {
+    "step": {
+      "user": {
+        "title": "HA Energy Native Clone",
+        "description": "Tworzy klon natywnego panelu Energii w pasku bocznym.",
+        "data": {
+          "title": "Tytuł paska bocznego",
+          "icon": "Ikona paska bocznego",
+          "url_path": "Ścieżka URL",
+          "admin_only": "Tylko dla administratorów"
+        }
+      }
+    },
+    "error": {
+      "single_instance_allowed": "Obsługiwana jest tylko jedna instancja."
+    },
+    "abort": {
+      "single_instance_allowed": "Obsługiwana jest tylko jedna instancja."
+    }
+  }
+}

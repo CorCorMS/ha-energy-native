@@ -1,0 +1,23 @@
+{
+  "title": "HA Energy Native Clone",
+  "config": {
+    "step": {
+      "user": {
+        "title": "HA Energy Native Clone",
+        "description": "Maakt een zijbalk-kloon van het native Energiedashboard.",
+        "data": {
+          "title": "Titel zijbalk",
+          "icon": "Pictogram zijbalk",
+          "url_path": "URL-pad",
+          "admin_only": "Alleen voor beheerders"
+        }
+      }
+    },
+    "error": {
+      "single_instance_allowed": "Slechts één instantie wordt ondersteund."
+    },
+    "abort": {
+      "single_instance_allowed": "Slechts één instantie wordt ondersteund."
+    }
+  }
+}

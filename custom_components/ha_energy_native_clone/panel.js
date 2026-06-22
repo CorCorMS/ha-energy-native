@@ -13,26 +13,219 @@
     condition: "view_columns",
     max: 1,
   };
-  const NOW_REPLACEMENT_TITLE = "Jetzt";
-  const NOW_PRIMARY_CARD_TITLE = "Stromquellen";
   const LOCALIZE_FALLBACK = {
+    nowViewTitle: {
+      de: "Jetzt",
+      en: "Now",
+      fr: "Maintenant",
+      es: "Ahora",
+      it: "Adesso",
+      nl: "Nu",
+      pl: "Teraz",
+      pt: "Agora",
+      cs: "Nyní",
+      da: "Nu",
+      fi: "Nyt",
+      sv: "Nu",
+      nb: "Nå",
+      nn: "No",
+      tr: "Şimdi",
+      ru: "Сейчас",
+      uk: "Зараз",
+      ja: "現在",
+      ko: "지금",
+      "zh-hans": "现在",
+      "zh-hant": "現在",
+    },
+    powerSourcesTitle: {
+      de: "Stromquellen",
+      en: "Power sources",
+      fr: "Sources d'alimentation",
+      es: "Fuentes de energía",
+      it: "Fonti di alimentazione",
+      nl: "Stroombronnen",
+      pl: "Źródła zasilania",
+      pt: "Fontes de energia",
+      cs: "Zdroje energie",
+      da: "Strømkilder",
+      fi: "Virtalähteet",
+      sv: "Strömkällor",
+      nb: "Strømkilder",
+      nn: "Straumkjelder",
+      tr: "Güç kaynakları",
+      ru: "Источники энергии",
+      uk: "Джерела енергії",
+      ja: "電力ソース",
+      ko: "전력 소스",
+      "zh-hans": "电力来源",
+      "zh-hant": "電力來源",
+    },
+    powerFlowTitle: {
+      de: "Leistungsfluss",
+      en: "Power flow",
+      fr: "Flux de puissance",
+      es: "Flujo de potencia",
+      it: "Flusso di potenza",
+      nl: "Vermogensstroom",
+      pl: "Przepływ mocy",
+      pt: "Fluxo de energia",
+      cs: "Tok výkonu",
+      da: "Effektflow",
+      fi: "Tehovirta",
+      sv: "Effektflöde",
+      nb: "Effektflyt",
+      nn: "Effektflyt",
+      tr: "Güç akışı",
+      ru: "Поток мощности",
+      uk: "Потік потужності",
+      ja: "電力フロー",
+      ko: "전력 흐름",
+      "zh-hans": "功率流",
+      "zh-hant": "功率流",
+    },
+    currentPowerFlowTitle: {
+      de: "Aktueller Leistungsfluss",
+      en: "Current power flow",
+      fr: "Flux de puissance actuel",
+      es: "Flujo de potencia actual",
+      it: "Flusso di potenza attuale",
+      nl: "Huidige vermogensstroom",
+      pl: "Aktualny przepływ mocy",
+      pt: "Fluxo de energia atual",
+      cs: "Aktuální tok výkonu",
+      da: "Aktuel effektflow",
+      fi: "Nykyinen tehovirta",
+      sv: "Aktuellt effektflöde",
+      nb: "Nåværende effektflyt",
+      nn: "Gjeldande effektflyt",
+      tr: "Geçerli güç akışı",
+      ru: "Текущий поток мощности",
+      uk: "Поточний потік потужності",
+      ja: "現在の電力フロー",
+      ko: "현재 전력 흐름",
+      "zh-hans": "当前功率流",
+      "zh-hant": "目前功率流",
+    },
+    waterFlowTitle: {
+      de: "Wasserfluss",
+      en: "Water flow",
+      fr: "Débit d'eau",
+      es: "Flujo de agua",
+      it: "Flusso dell'acqua",
+      nl: "Waterstroom",
+      pl: "Przepływ wody",
+      pt: "Fluxo de água",
+      cs: "Průtok vody",
+      da: "Vandflow",
+      fi: "Veden virtaus",
+      sv: "Vattenflöde",
+      nb: "Vannflyt",
+      nn: "Vassflyt",
+      tr: "Su akışı",
+      ru: "Поток воды",
+      uk: "Потік води",
+      ja: "水流",
+      ko: "물 흐름",
+      "zh-hans": "水流",
+      "zh-hant": "水流",
+    },
     grossGridLabel: {
       de: "Netzbezug brutto",
       en: "Gross grid import",
+      fr: "Import réseau brut",
+      es: "Importación bruta de red",
+      it: "Prelievo rete lordo",
+      nl: "Bruto netafname",
+      pl: "Pobór brutto z sieci",
+      pt: "Importação bruta da rede",
+      cs: "Hrubý odběr ze sítě",
+      da: "Brutto netimport",
+      fi: "Bruttoverkkotuonti",
+      sv: "Brutto nätimport",
+      nb: "Brutto nettimport",
+      nn: "Brutto nettimport",
+      tr: "Brüt şebeke alımı",
+      ru: "Валовый импорт из сети",
+      uk: "Валовий імпорт з мережі",
+      ja: "総電力購入",
+      ko: "총 전력 수입",
+      "zh-hans": "电网总输入",
+      "zh-hant": "電網總輸入",
     },
     balconyTitle: {
       de: "Balkonkraftwerk",
       en: "Balcony power station",
+      fr: "Centrale solaire de balcon",
+      es: "Central eléctrica de balcón",
+      it: "Impianto da balcone",
+      nl: "Balkonkrachtcentrale",
+      pl: "Elektrownia balkonowa",
+      pt: "Central elétrica de varanda",
+      cs: "Balkonová elektrárna",
+      da: "Altankraftværk",
+      fi: "Parvekevoimala",
+      sv: "Balkongkraftverk",
+      nb: "Balkongkraftverk",
+      nn: "Balkongkraftverk",
+      tr: "Balkon enerji sistemi",
+      ru: "Балконная электростанция",
+      uk: "Балконна електростанція",
+      ja: "ベランダ発電",
+      ko: "발코니 발전소",
+      "zh-hans": "阳台发电系统",
+      "zh-hant": "陽台發電系統",
     },
     balconyDescription: {
       de: "Aktiviert Brutto-Netzbezug im Energie-Clone: Einspeisung wird dort nicht mehr vom Bezug abgezogen.",
       en: "Enables gross grid import in the energy clone: exported energy is no longer subtracted from grid import there.",
+      fr: "Active l'import réseau brut dans le clone Énergie : l'énergie exportée n'y est plus soustraite de l'import réseau.",
+      es: "Activa la importación bruta de red en el clon de Energía: la energía exportada ya no se resta allí de la importación de red.",
+      it: "Abilita il prelievo rete lordo nel clone Energia: l'energia esportata non viene più sottratta dal prelievo di rete.",
+      nl: "Schakelt bruto netafname in de Energie-clone in: teruglevering wordt daar niet langer van de netafname afgetrokken.",
+      pl: "Włącza pobór brutto z sieci w klonie Energii: oddana energia nie jest tam już odejmowana od poboru z sieci.",
+      pt: "Ativa a importação bruta da rede no clone de Energia: a energia exportada não é mais subtraída da importação da rede.",
+      cs: "Povolí v klonu Energie hrubý odběr ze sítě: dodaná energie se zde již neodečítá od odběru ze sítě.",
+      da: "Aktiverer brutto netimport i energiklonen: eksporteret energi trækkes ikke længere fra netimporten dér.",
+      fi: "Ottaa käyttöön bruttoverkkotuonnin Energy-kloonissa: verkkoon syötettyä energiaa ei enää vähennetä verkkotuonnista siellä.",
+      sv: "Aktiverar brutto nätimport i Energiklonen: exporterad energi dras inte längre av från nätimporten där.",
+      nb: "Aktiverer brutto nettimport i energiklonen: eksportert energi trekkes ikke lenger fra nettimporten der.",
+      nn: "Aktiverer brutto nettimport i energiklonen: eksportert energi blir ikkje lenger trekt frå nettimporten der.",
+      tr: "Enerji klonunda brüt şebeke alımını etkinleştirir: dışa aktarılan enerji artık burada şebeke alımından düşülmez.",
+      ru: "Включает валовый импорт из сети в клоне Energy: экспортируемая энергия больше не вычитается из импорта из сети.",
+      uk: "Увімкнути валовий імпорт з мережі в клоні Energy: експортована енергія більше не віднімається від імпорту з мережі.",
+      ja: "Energy クローンで総電力購入を有効化します。売電分は電力購入量から差し引かれなくなります。",
+      ko: "Energy 클론에서 총 전력 수입을 활성화합니다. 이제 수출 전력은 전력 수입에서 차감되지 않습니다.",
+      "zh-hans": "在 Energy 克隆中启用电网总输入：回馈电量不再从购电量中扣除。",
+      "zh-hant": "在 Energy 複製中啟用電網總輸入：回饋電量不再從購電量中扣除。",
+    },
+    chargePrefix: {
+      de: "\u2193 ",
+      en: "\u2193 ",
+      fr: "\u2193 ",
+      es: "\u2193 ",
+      it: "\u2193 ",
+      nl: "\u2193 ",
+      pl: "\u2193 ",
+      pt: "\u2193 ",
+      cs: "\u2193 ",
+    },
+    dischargePrefix: {
+      de: "\u2191 ",
+      en: "\u2191 ",
+      fr: "\u2191 ",
+      es: "\u2191 ",
+      it: "\u2191 ",
+      nl: "\u2191 ",
+      pl: "\u2191 ",
+      pt: "\u2191 ",
+      cs: "\u2191 ",
     },
   };
   const FOSSIL_FUEL_PERCENTAGE_ENTITY_CANDIDATES = [
     "sensor.electricity_maps_anteil_fossiler_energietrager",
     "sensor.electricity_maps_fossil_fuel_percentage",
   ];
+  const CIRCLE_CIRCUMFERENCE = 238.76104;
   const FLOW_RATE_TO_LMIN = {
     "m³/h": 1000 / 60,
     "m3/h": 1000 / 60,
@@ -65,10 +258,31 @@
     return false;
   };
 
-  const getLang = (hass) => hass?.locale?.language || hass?.language || "en";
+  const getLangCandidates = (hass) => {
+    const rawLang =
+      hass?.locale?.language ||
+      hass?.language ||
+      navigator?.language ||
+      "en";
+    const normalized = String(rawLang).trim().toLowerCase();
+    const candidates = [normalized];
+    if (normalized.includes("-")) {
+      candidates.push(normalized.split("-")[0]);
+    }
+    if (!candidates.includes("en")) {
+      candidates.push("en");
+    }
+    return candidates;
+  };
 
-  const t = (hass, key) =>
-    LOCALIZE_FALLBACK[key]?.[getLang(hass)] || LOCALIZE_FALLBACK[key]?.en || key;
+  const t = (hass, key) => {
+    const values = LOCALIZE_FALLBACK[key];
+    if (!values) return key;
+    for (const candidate of getLangCandidates(hass)) {
+      if (candidate in values) return values[candidate];
+    }
+    return values.en || Object.values(values)[0] || key;
+  };
 
   const formatNumber = (value, maximumFractionDigits = 0) =>
     new Intl.NumberFormat(undefined, { maximumFractionDigits }).format(value);
@@ -380,6 +594,7 @@
       toBattery,
       batterySoc,
       home,
+      pvUsedLocally,
       gas,
       water,
       lowCarbon,
@@ -406,11 +621,15 @@
     if (!circle) return;
     const icon = circle.querySelector("ha-svg-icon, a.circle > ha-svg-icon");
     const overlay = circle.querySelector("svg");
+    const liveHomeRing = circle.querySelector(
+      'svg[data-ha-energy-native-home-ring="true"]'
+    );
 
     Array.from(circle.childNodes).forEach((node) => {
       if (
         node === icon ||
         node === overlay ||
+        node === liveHomeRing ||
         (node.nodeType === 1 &&
           node.classList?.contains("ha-energy-native-live-value"))
       ) {
@@ -426,6 +645,117 @@
   const setContainerVisible = (container, visible) => {
     if (!container) return;
     container.style.display = visible ? "" : "none";
+  };
+
+  const setPathVisibility = (root, selector, visible) => {
+    root.querySelectorAll(selector).forEach((el) => {
+      el.style.display = visible ? "" : "none";
+    });
+  };
+
+  const setLineGroupVisibility = (root, key, visible) => {
+    [
+      `path.${key}`,
+      `circle.${key}`,
+      `g.${key}`,
+      `.${key} path`,
+      `.${key} circle`,
+      `.${key} line`,
+      `.${key} polyline`,
+    ].forEach((selector) => setPathVisibility(root, selector, visible));
+  };
+
+  const updateHomeRing = (container, live) => {
+    if (!container) return;
+    const circle = container.querySelector(".circle");
+    if (!circle) return;
+
+    circle
+      .querySelectorAll('svg:not([data-ha-energy-native-home-ring="true"])')
+      .forEach((el) => {
+        el.style.display = "none";
+      });
+
+    let svg = circle.querySelector('svg[data-ha-energy-native-home-ring="true"]');
+    if (!svg) {
+      svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("data-ha-energy-native-home-ring", "true");
+      svg.setAttribute("viewBox", "0 0 80 80");
+      svg.style.position = "absolute";
+      svg.style.inset = "0";
+      svg.style.width = "100%";
+      svg.style.height = "100%";
+      svg.style.pointerEvents = "none";
+      circle.appendChild(svg);
+    }
+
+    const lowCarbonGrid =
+      live.fossilFuelPercentage === undefined
+        ? 0
+        : live.fromGrid * Math.max(0, 1 - live.fossilFuelPercentage / 100);
+    const pvSegment = Math.max(0, Math.min(live.home, live.pvUsedLocally || 0));
+    const co2Segment = Math.max(
+      0,
+      Math.min(Math.max(0, live.home - pvSegment), lowCarbonGrid)
+    );
+    const gridSegment = Math.max(0, live.home - pvSegment - co2Segment);
+
+    const segments = [
+      {
+        key: "pv",
+        value: pvSegment,
+        color: "var(--energy-solar-color)",
+      },
+      {
+        key: "co2",
+        value: co2Segment,
+        color: "var(--energy-non-fossil-color)",
+      },
+      {
+        key: "grid",
+        value: gridSegment,
+        color: "var(--energy-grid-consumption-color)",
+      },
+    ];
+
+    const getOrCreateSegment = (key) => {
+      let c = svg.querySelector(`circle[data-segment="${key}"]`);
+      if (!c) {
+        c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        c.setAttribute("data-segment", key);
+        c.setAttribute("cx", "40");
+        c.setAttribute("cy", "40");
+        c.setAttribute("r", "38");
+        c.setAttribute("fill", "none");
+        c.setAttribute("stroke-width", "4");
+        c.setAttribute("transform", "rotate(-90 40 40)");
+        svg.appendChild(c);
+      }
+      return c;
+    };
+
+    if (live.home <= 0) {
+      segments.forEach(({ key }) => {
+        const c = getOrCreateSegment(key);
+        c.style.display = "none";
+      });
+      return;
+    }
+
+    let offset = 0;
+    segments.forEach((segment) => {
+      const c = getOrCreateSegment(segment.key);
+      if (segment.value <= 0) {
+        c.style.display = "none";
+        return;
+      }
+      const part = CIRCLE_CIRCUMFERENCE * (segment.value / live.home);
+      c.style.display = "";
+      c.setAttribute("stroke", segment.color);
+      c.setAttribute("stroke-dasharray", `${part} ${CIRCLE_CIRCUMFERENCE - part}`);
+      c.setAttribute("stroke-dashoffset", `${-offset}`);
+      offset += part;
+    });
   };
 
   const setGridCircleValues = (container, returnedText, importedText) => {
@@ -522,6 +852,7 @@
         root.querySelector(".circle-container.home"),
         formatPower(live.home)
       );
+      updateHomeRing(root.querySelector(".circle-container.home"), live);
 
       setGridCircleValues(
         root.querySelector(".circle-container.grid"),
@@ -532,11 +863,23 @@
       );
 
       const batteryContainer = root.querySelector(".circle-container.battery");
-      if (batteryContainer) {
+      const hasBattery = Array.isArray(this._data?.prefs?.energy_sources)
+        ? this._data.prefs.energy_sources.some((source) => source?.type === "battery")
+        : false;
+      setContainerVisible(batteryContainer, hasBattery);
+      if (batteryContainer && hasBattery) {
         const inEl = batteryContainer.querySelector(".battery-in");
         const outEl = batteryContainer.querySelector(".battery-out");
-        if (inEl) inEl.textContent = `↓ ${formatPower(live.toBattery)}`;
-        if (outEl) outEl.textContent = `↑ ${formatPower(live.fromBattery)}`;
+        if (inEl) {
+          inEl.textContent = `${t(this.hass, "chargePrefix")}${formatPower(
+            live.toBattery
+          )}`;
+        }
+        if (outEl) {
+          outEl.textContent = `${t(this.hass, "dischargePrefix")}${formatPower(
+            live.fromBattery
+          )}`;
+        }
       }
 
       const lineSvg = root.querySelector(".lines svg");
@@ -555,12 +898,11 @@
           .forEach((el) => {
             el.style.display = showLowCarbon ? "" : "none";
           });
-        lineSvg.querySelectorAll("circle.gas").forEach((el) => {
-          el.style.display = live.gas.value > 0 ? "" : "none";
-        });
-        lineSvg.querySelectorAll("circle.water").forEach((el) => {
-          el.style.display = live.water.value > 0 ? "" : "none";
-        });
+        const showBatteryFlow =
+          hasBattery && (live.toBattery > 0 || live.fromBattery > 0);
+        setLineGroupVisibility(lineSvg, "gas", live.gas.value > 0);
+        setLineGroupVisibility(lineSvg, "water", live.water.value > 0);
+        setLineGroupVisibility(lineSvg, "battery", showBatteryFlow);
       }
     };
 
@@ -805,7 +1147,7 @@
     );
 
     const distributionCard = {
-      title: "Energieverteilung",
+      title: t(window.hass, "powerFlowTitle"),
       type: "energy-distribution",
       collection_key: ENERGY_COLLECTION_KEY,
     };
@@ -813,7 +1155,7 @@
 
     const nowReplacementView = deepClone(electricityView);
     nowReplacementView.path = NOW_VIEW_PATH;
-    nowReplacementView.title = NOW_REPLACEMENT_TITLE;
+    nowReplacementView.title = t(window.hass, "nowViewTitle");
     nowReplacementView.type = "sections";
     nowReplacementView.max_columns = 4;
     nowReplacementView.dense_section_placement = true;
@@ -834,19 +1176,19 @@
         column_span: compactLayout ? 1 : 3,
         cards: [
           {
-            title: NOW_PRIMARY_CARD_TITLE,
+            title: t(window.hass, "powerSourcesTitle"),
             type: "power-sources-graph",
             collection_key: POWER_COLLECTION_KEY,
             grid_options: { columns: 36 },
           },
           {
-            title: "Aktueller Leistungsfluss",
+            title: t(window.hass, "currentPowerFlowTitle"),
             type: "power-sankey",
             collection_key: POWER_COLLECTION_KEY,
             grid_options: { columns: 36 },
           },
           {
-            title: "Wasserfluss",
+            title: t(window.hass, "waterFlowTitle"),
             type: "water-flow-sankey",
             collection_key: POWER_COLLECTION_KEY,
             grid_options: { columns: 36 },
@@ -859,8 +1201,8 @@
     if (!compactLayout) {
       nowReplacementView.sidebar = {
         sections: [{ cards: [distributionCard] }],
-        content_label: NOW_PRIMARY_CARD_TITLE,
-        sidebar_label: "Energieverteilung",
+        content_label: t(window.hass, "powerSourcesTitle"),
+        sidebar_label: t(window.hass, "powerFlowTitle"),
       };
     } else {
       delete nowReplacementView.sidebar;

@@ -1,0 +1,23 @@
+{
+  "title": "HA Energy Native Clone",
+  "config": {
+    "step": {
+      "user": {
+        "title": "HA Energy Native Clone",
+        "description": "Crea un clon en la barra lateral del panel de Energía nativo.",
+        "data": {
+          "title": "Título de la barra lateral",
+          "icon": "Icono de la barra lateral",
+          "url_path": "Ruta URL",
+          "admin_only": "Solo para administradores"
+        }
+      }
+    },
+    "error": {
+      "single_instance_allowed": "Solo se admite una instancia."
+    },
+    "abort": {
+      "single_instance_allowed": "Solo se admite una instancia."
+    }
+  }
+}

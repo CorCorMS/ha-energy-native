@@ -1,0 +1,23 @@
+{
+  "title": "HA Energy Native Clone",
+  "config": {
+    "step": {
+      "user": {
+        "title": "HA Energy Native Clone",
+        "description": "Vytvoří postranní klon nativního energetického dashboardu.",
+        "data": {
+          "title": "Název postranní lišty",
+          "icon": "Ikona postranní lišty",
+          "url_path": "URL cesta",
+          "admin_only": "Pouze pro administrátory"
+        }
+      }
+    },
+    "error": {
+      "single_instance_allowed": "Podporována je pouze jedna instance."
+    },
+    "abort": {
+      "single_instance_allowed": "Podporována je pouze jedna instance."
+    }
+  }
+}

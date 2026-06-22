@@ -15,6 +15,7 @@ HA Energy Native adds a second native Home Assistant Energy dashboard entry to t
 - enhanced Summary view with gross grid import presentation
 - live Now tab with power-focused cards
 - `Balkonkraftwerk` option inside the PV module configuration
+- multilingual clone labels and Energy-setup texts with locale-aware fallback behavior
 - reuse of the original Home Assistant Energy configuration
 
 ## Visual overview
@@ -58,6 +59,7 @@ The original Energy dashboard remains in place, and the clone uses the same unde
 - second native Energy dashboard entry running in parallel to the original
 - HACS-ready custom integration structure
 - clone-specific PV option for `Balkonkraftwerk`
+- multilingual clone frontend and setup texts
 - clone-specific gross grid import logic for:
   - sources table
   - grid neutrality gauge
@@ -117,6 +119,7 @@ If you want to support development:
 - the sidebar panel runs in parallel with the original Energy dashboard
 - the project keeps the original dashboard untouched
 - the original Energy sensors, source assignments, statistics, and saved preferences continue to be used
+- clone-specific labels are multilingual and follow Home Assistant locale detection with locale-to-base-language fallback
 
 ## License
 

@@ -1,0 +1,23 @@
+{
+  "title": "HA Energy Native Clone",
+  "config": {
+    "step": {
+      "user": {
+        "title": "HA Energy Native Clone",
+        "description": "Создаёт клон нативной панели Энергия в боковой панели.",
+        "data": {
+          "title": "Заголовок боковой панели",
+          "icon": "Значок боковой панели",
+          "url_path": "Путь URL",
+          "admin_only": "Только для администраторов"
+        }
+      }
+    },
+    "error": {
+      "single_instance_allowed": "Поддерживается только один экземпляр."
+    },
+    "abort": {
+      "single_instance_allowed": "Поддерживается только один экземпляр."
+    }
+  }
+}

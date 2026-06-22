@@ -1,0 +1,23 @@
+{
+  "title": "HA Energy Native Clone",
+  "config": {
+    "step": {
+      "user": {
+        "title": "HA Energy Native Clone",
+        "description": "Створює клон нативної панелі Енергія в бічній панелі.",
+        "data": {
+          "title": "Заголовок бічної панелі",
+          "icon": "Значок бічної панелі",
+          "url_path": "Шлях URL",
+          "admin_only": "Лише для адміністраторів"
+        }
+      }
+    },
+    "error": {
+      "single_instance_allowed": "Підтримується лише один екземпляр."
+    },
+    "abort": {
+      "single_instance_allowed": "Підтримується лише один екземпляр."
+    }
+  }
+}

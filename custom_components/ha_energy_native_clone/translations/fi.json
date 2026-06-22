@@ -1,0 +1,23 @@
+{
+  "title": "HA Energy Native Clone",
+  "config": {
+    "step": {
+      "user": {
+        "title": "HA Energy Native Clone",
+        "description": "Luo sivupalkkiin alkuperäisen Energia-kojelaudan kloonin.",
+        "data": {
+          "title": "Sivupalkin otsikko",
+          "icon": "Sivupalkin kuvake",
+          "url_path": "URL-polku",
+          "admin_only": "Vain ylläpitäjille"
+        }
+      }
+    },
+    "error": {
+      "single_instance_allowed": "Vain yksi instanssi on tuettu."
+    },
+    "abort": {
+      "single_instance_allowed": "Vain yksi instanssi on tuettu."
+    }
+  }
+}

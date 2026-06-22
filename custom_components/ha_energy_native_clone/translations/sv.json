@@ -1,0 +1,23 @@
+{
+  "title": "HA Energy Native Clone",
+  "config": {
+    "step": {
+      "user": {
+        "title": "HA Energy Native Clone",
+        "description": "Skapar en sidofältsklon av den inbyggda Energipanelen.",
+        "data": {
+          "title": "Sidofältets titel",
+          "icon": "Sidofältsikon",
+          "url_path": "URL-sökväg",
+          "admin_only": "Endast för administratörer"
+        }
+      }
+    },
+    "error": {
+      "single_instance_allowed": "Endast en instans stöds."
+    },
+    "abort": {
+      "single_instance_allowed": "Endast en instans stöds."
+    }
+  }
+}

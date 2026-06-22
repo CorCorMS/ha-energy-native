@@ -1,0 +1,23 @@
+{
+  "title": "HA Energy Native Clone",
+  "config": {
+    "step": {
+      "user": {
+        "title": "HA Energy Native Clone",
+        "description": "ネイティブのエネルギーダッシュボードのサイドバークローンを作成します。",
+        "data": {
+          "title": "サイドバータイトル",
+          "icon": "サイドバーアイコン",
+          "url_path": "URLパス",
+          "admin_only": "管理者のみ"
+        }
+      }
+    },
+    "error": {
+      "single_instance_allowed": "サポートされるインスタンスは1つだけです。"
+    },
+    "abort": {
+      "single_instance_allowed": "サポートされるインスタンスは1つだけです。"
+    }
+  }
+}

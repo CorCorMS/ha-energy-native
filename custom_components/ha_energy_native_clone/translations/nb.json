@@ -1,0 +1,23 @@
+{
+  "title": "HA Energy Native Clone",
+  "config": {
+    "step": {
+      "user": {
+        "title": "HA Energy Native Clone",
+        "description": "Oppretter en sidefelt-klone av det opprinnelige Energi-dashbordet.",
+        "data": {
+          "title": "Tittel i sidefelt",
+          "icon": "Ikon i sidefelt",
+          "url_path": "URL-sti",
+          "admin_only": "Kun for administratorer"
+        }
+      }
+    },
+    "error": {
+      "single_instance_allowed": "Bare én instans støttes."
+    },
+    "abort": {
+      "single_instance_allowed": "Bare én instans støttes."
+    }
+  }
+}

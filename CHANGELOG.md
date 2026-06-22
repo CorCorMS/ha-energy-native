@@ -2,6 +2,20 @@
 
 All notable changes to this project are documented in this file.
 
+## v0.1.12 - 2026-06-23
+
+### Added
+
+- expanded clone language coverage for the custom frontend labels and the integration setup flow
+- added additional translation files for `cs`, `da`, `es`, `fi`, `fr`, `it`, `ja`, `ko`, `nb`, `nl`, `nn`, `pl`, `pt`, `ru`, `sv`, `tr`, `uk`, `zh-Hans`, and `zh-Hant`
+
+### Changed
+
+- unified clone-specific labels under one locale-aware frontend localization system
+- improved locale handling so region-specific HA languages such as `en-GB`, `pt-BR`, `es-419`, and similar variants resolve more like the original dashboard: exact locale first, base language second, English fallback last
+- extended the same multilingual coverage to the `Balkonkraftwerk` option inside the Energy setup dialog
+- cleaned up clone battery direction labels so they use stable Unicode arrows across locales
+
 ## v0.1.11 - 2026-06-23
 
 ### Fixed

@@ -1,0 +1,23 @@
+{
+  "title": "HA Energy Native Clone",
+  "config": {
+    "step": {
+      "user": {
+        "title": "HA Energy Native Clone",
+        "description": "기본 에너지 대시보드의 사이드바 클론을 생성합니다.",
+        "data": {
+          "title": "사이드바 제목",
+          "icon": "사이드바 아이콘",
+          "url_path": "URL 경로",
+          "admin_only": "관리자 전용"
+        }
+      }
+    },
+    "error": {
+      "single_instance_allowed": "하나의 인스턴스만 지원됩니다."
+    },
+    "abort": {
+      "single_instance_allowed": "하나의 인스턴스만 지원됩니다."
+    }
+  }
+}

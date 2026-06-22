@@ -54,7 +54,7 @@ The original Energy dashboard remains in place, and the clone uses the same unde
 
 - second native Energy dashboard entry running in parallel to the original
 - HACS-ready custom integration structure
-- clone-specific PV option for `Balkonkraftwerk`
+- clone-specific PV option for `Plug-in solar system`
 - multilingual clone frontend and setup texts
 - clone-specific gross grid import logic for:
   - sources table

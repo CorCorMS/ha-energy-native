@@ -1,3 +1,14 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * This file includes code derived from the Home Assistant frontend Energy dashboard.
+ * Home Assistant frontend is licensed under Apache License 2.0:
+ * https://github.com/home-assistant/frontend
+ *
+ * Additional modifications for HA Energy Native are also distributed under Apache-2.0
+ * so redistribution of the derived work remains compliant with Home Assistant licensing.
+ */
+
 (() => {
   const DOMAIN = "ha_energy_native_clone";
   const CLONE_URL_PATH = "energy-native-clone";

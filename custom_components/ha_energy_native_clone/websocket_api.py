@@ -1,3 +1,9 @@
+"""SPDX-License-Identifier: Apache-2.0
+
+Distributed under Apache-2.0 for compatibility with Home Assistant-derived
+parts shipped in this repository.
+"""
+
 from __future__ import annotations
 
 import voluptuous as vol

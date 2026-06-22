@@ -1,0 +1,17 @@
+HA Energy Native includes code that is derived from or closely based on
+Home Assistant Energy dashboard components.
+
+Home Assistant projects:
+- https://github.com/home-assistant/core
+- https://github.com/home-assistant/frontend
+
+Those upstream projects are distributed under the Apache License 2.0.
+Accordingly, the derived and accompanying software files in this repository
+are distributed under Apache License 2.0 as well.
+
+This applies in particular to software under:
+- /custom_components/ha_energy_native_clone/
+
+Original non-code branding and media created for HA Energy Native are not
+part of the Home Assistant upstream codebase and are licensed separately;
+see ASSET_LICENSE.md.

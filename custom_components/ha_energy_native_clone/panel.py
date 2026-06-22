@@ -1,3 +1,14 @@
+"""SPDX-License-Identifier: Apache-2.0
+
+This integration module is distributed under Apache-2.0.
+It is designed to run inside Home Assistant and is shipped alongside
+code derived from the Home Assistant Energy dashboard frontend.
+
+Home Assistant project:
+https://github.com/home-assistant/core
+https://github.com/home-assistant/frontend
+"""
+
 from __future__ import annotations
 
 from pathlib import Path

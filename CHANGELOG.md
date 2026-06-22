@@ -2,6 +2,19 @@
 
 All notable changes to this project are documented in this file.
 
+## v0.1.13 - 2026-06-23
+
+### Changed
+
+- clarified licensing boundaries between Home Assistant-derived software code and original HA Energy Native branding/media assets
+- kept Apache-2.0 for code distributed alongside Home Assistant-derived parts
+- added explicit upstream attribution references for Home Assistant-derived files
+
+### Added
+
+- added `NOTICE` to document Apache-2.0 attribution context for Home Assistant-derived software components
+- added `ASSET_LICENSE.md` to separately document non-commercial use restrictions for original repository media and branding assets
+
 ## v0.1.12 - 2026-06-23
 
 ### Added

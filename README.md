@@ -123,4 +123,21 @@ If you want to support development:
 
 ## License
 
-This repository uses the same license family as Home Assistant: Apache License 2.0.
+Software code in this repository is distributed under Apache License 2.0.
+
+Why:
+
+- this project includes code derived from Home Assistant
+- Home Assistant core/frontend licensing must be preserved for those parts
+
+See:
+
+- [LICENSE](https://github.com/CorCorMS/ha-energy-native/blob/main/LICENSE)
+- [NOTICE](https://github.com/CorCorMS/ha-energy-native/blob/main/NOTICE)
+
+Original branding, icons, banners, and screenshot assets are licensed separately
+for non-commercial use only.
+
+See:
+
+- [ASSET_LICENSE.md](https://github.com/CorCorMS/ha-energy-native/blob/main/ASSET_LICENSE.md)

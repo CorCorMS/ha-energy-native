@@ -1,3 +1,9 @@
+"""SPDX-License-Identifier: Apache-2.0
+
+Distributed under Apache-2.0 for compatibility with Home Assistant-derived
+parts shipped in this repository.
+"""
+
 DOMAIN = "ha_energy_native_clone"
 ASSET_VERSION = "2026.06.23.64"
 

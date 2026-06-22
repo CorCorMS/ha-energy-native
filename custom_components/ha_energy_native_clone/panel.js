@@ -13,7 +13,6 @@
     condition: "view_columns",
     max: 1,
   };
-  const TEST_CLONE_PATH = "test-clone";
   const NOW_REPLACEMENT_TITLE = "Jetzt";
   const NOW_PRIMARY_CARD_TITLE = "Stromquellen";
   const LOCALIZE_FALLBACK = {
@@ -800,7 +799,7 @@
   const patchPanelEnergy = () => {
     const tag = "ha-panel-energy";
     const Panel = customElements.get(tag);
-    if (!Panel || Panel.prototype.__haEnergyNativeTestClonePatched) return;
+    if (!Panel || Panel.prototype.__haEnergyNativeNowPatched) return;
 
     const originalSetLovelace = Panel.prototype._setLovelace;
     Panel.prototype._setLovelace = async function (...args) {
@@ -814,7 +813,7 @@
         if (!nowReplacementView) return;
 
         const newViews = views
-          .filter((view) => view.path !== TEST_CLONE_PATH)
+          .filter((view) => view.path !== "test-clone")
           .map((view) =>
             view.path === NOW_VIEW_PATH ? nowReplacementView : view
           );
@@ -831,7 +830,7 @@
           },
         };
       } catch (err) {
-        console.warn("HA Energy Native: failed to build Test Clone tab", err);
+        console.warn("HA Energy Native: failed to build Jetzt replacement", err);
       }
     };
 
@@ -840,7 +839,7 @@
       return originalNavigateConfig?.apply(this, args);
     };
 
-    Panel.prototype.__haEnergyNativeTestClonePatched = true;
+    Panel.prototype.__haEnergyNativeNowPatched = true;
   };
 
   const patchEverything = () => {

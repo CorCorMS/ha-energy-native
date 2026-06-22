@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented in this file.
 
+## v0.1.5 - 2026-06-22
+
+### Fixed
+
+- corrected the deployed HA clone so the active sidebar panel uses the current `Jetzt` implementation instead of the old test variant
+- bumped frontend asset version to force Home Assistant to refresh cached panel files
+
+### Changed
+
+- added a repository-level `icon.png` for improved HACS/repository presentation
+- clarified the README HACS instructions to use the correct repository URL
+- prepared the package metadata for the updated release
 ## v0.1.4 - 2026-06-22
 
 ### Changed

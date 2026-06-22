@@ -27,7 +27,7 @@ def _panel_options(config: dict | None) -> dict:
 
 
 async def async_register_panel(hass: HomeAssistant, config: dict | None = None) -> None:
-    """Register sidebar panel as a native Energy clone with isolated test-view hooks."""
+    """Register sidebar panel as a native Energy clone with a custom Jetzt view."""
 
     options = _panel_options(config)
     panel_path = Path(__file__).with_name("panel.js")

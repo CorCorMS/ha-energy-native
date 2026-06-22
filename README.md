@@ -78,6 +78,11 @@ Repository URL:
 
 `https://github.com/CorCorMS/ha-energy-native`
 
+Important:
+
+- use `https://github.com/CorCorMS/ha-energy-native`
+- do not use `https://github.com/CorCorMS/grow-os-ha` for this integration
+
 ### Direct HACS link
 
 [![Open your Home Assistant instance and open the HACS repository dialog with a specific repository pre-filled.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=CorCorMS&repository=ha-energy-native&category=integration)

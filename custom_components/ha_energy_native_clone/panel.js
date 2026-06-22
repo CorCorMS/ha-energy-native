@@ -317,10 +317,20 @@
           states,
           source.power_config.stat_rate_inverted
         );
+        let usedDedicatedGridPower = false;
         if (fromValue > 0) fromGrid += fromValue;
         if (toValue > 0) toGrid += toValue;
-        if (invertedValue > 0) toGrid += invertedValue;
-        else if (invertedValue < 0) fromGrid += Math.abs(invertedValue);
+        if (fromValue !== undefined || toValue !== undefined) {
+          usedDedicatedGridPower = true;
+        }
+        if (!usedDedicatedGridPower && invertedValue > 0) {
+          toGrid += invertedValue;
+          usedDedicatedGridPower = true;
+        } else if (!usedDedicatedGridPower && invertedValue < 0) {
+          fromGrid += Math.abs(invertedValue);
+          usedDedicatedGridPower = true;
+        }
+        if (usedDedicatedGridPower) return;
       }
       if (!source.stat_rate) return;
       const value = getPowerFromState(states[source.stat_rate]);

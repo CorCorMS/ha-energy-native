@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented in this file.
 
+## v0.1.7 - 2026-06-22
+
+### Fixed
+
+- changed the live grid calculation to prefer only the power sensors configured in the Home Assistant Energy setup
+- use `power_config.stat_rate_from` and `power_config.stat_rate_to` as the primary live grid source mapping
+- prevent the live grid import/export view from mixing in the net-power sensor when dedicated Energy-setup power sensors are present
+
+### Changed
+
+- bumped the frontend asset version again so the corrected live grid sensor mapping reloads reliably
+
 ## v0.1.6 - 2026-06-22
 
 ### Fixed

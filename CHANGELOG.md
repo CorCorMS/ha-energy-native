@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented in this file.
 
+## v0.1.8 - 2026-06-22
+
+### Fixed
+
+- added integration-local brand assets under `custom_components/ha_energy_native_clone/brand/`
+- included `icon.png` and `logo.png` directly in the custom integration package for improved Home Assistant / HACS branding compatibility
+
+### Notes
+
+- the repository already includes root-level branding, but some Home Assistant / HACS flows also expect the brand assets inside the integration package itself
+
 ## v0.1.7 - 2026-06-22
 
 ### Fixed

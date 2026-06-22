@@ -29,6 +29,10 @@
       en: "Enables gross grid import in the energy clone: exported energy is no longer subtracted from grid import there.",
     },
   };
+  const FOSSIL_FUEL_PERCENTAGE_ENTITY_CANDIDATES = [
+    "sensor.electricity_maps_anteil_fossiler_energietrager",
+    "sensor.electricity_maps_fossil_fuel_percentage",
+  ];
   const FLOW_RATE_TO_LMIN = {
     "m³/h": 1000 / 60,
     "m3/h": 1000 / 60,
@@ -43,6 +47,8 @@
   const isClonePanel = (panel) => panel?.url_path === CLONE_URL_PATH;
   const isNowCloneRoute = () =>
     window.location.pathname.includes(`/${CLONE_URL_PATH}/${NOW_VIEW_PATH}`);
+  const useCompactNowLayout = () =>
+    window.matchMedia?.("(max-width: 899px)")?.matches ?? window.innerWidth < 900;
   const isCloneContext = (element) => {
     let current = element;
     while (current) {
@@ -98,6 +104,15 @@
   const getConfiguredPower = (states, entityId) =>
     entityId ? getPowerFromState(states[entityId]) : undefined;
 
+  const getConfiguredPercentage = (states, entityId) => {
+    if (!entityId) return undefined;
+    const stateObj = states[entityId];
+    if (!stateObj) return undefined;
+    const value = Number.parseFloat(stateObj.state);
+    if (Number.isNaN(value)) return undefined;
+    return Math.min(100, Math.max(0, value));
+  };
+
   const getFlowRateFromState = (stateObj) => {
     if (!stateObj) return undefined;
     const value = Number.parseFloat(stateObj.state);
@@ -111,6 +126,14 @@
       return `${formatNumber(value / 1000, 3)} kW`;
     }
     return `${formatNumber(value, 0)} W`;
+  };
+
+  const getFossilFuelPercentage = (states) => {
+    for (const entityId of FOSSIL_FUEL_PERCENTAGE_ENTITY_CANDIDATES) {
+      const value = getConfiguredPercentage(states, entityId);
+      if (value !== undefined) return value;
+    }
+    return undefined;
   };
 
   const adminFormatNumber = (hass, value, options = {}) =>
@@ -208,6 +231,9 @@
 
   const collectRelevantEntities = (prefs) => {
     const entities = new Set();
+    FOSSIL_FUEL_PERCENTAGE_ENTITY_CANDIDATES.forEach((entityId) =>
+      entities.add(entityId)
+    );
     (prefs?.energy_sources || []).forEach((source) => {
       if (source.stat_rate) entities.add(source.stat_rate);
       if (source.stat_soc) entities.add(source.stat_soc);
@@ -317,8 +343,23 @@
     const fromBattery = netBattery > 0 ? netBattery : 0;
     const toBattery = netBattery < 0 ? Math.abs(netBattery) : 0;
     const home = Math.max(0, fromGrid + solar + fromBattery - toGrid - toBattery);
+    const pvUsedLocally = Math.max(0, solar - toGrid - toBattery);
+    const fossilFuelPercentage = getFossilFuelPercentage(states);
+    const nonFossilGrid =
+      fossilFuelPercentage === undefined
+        ? 0
+        : fromGrid * Math.max(0, 1 - fossilFuelPercentage / 100);
     const gas = computeTotalFlowRate("gas", prefs, states);
     const water = computeTotalFlowRate("water", prefs, states);
+    const lowCarbon = Math.min(
+      home,
+      Math.max(
+        0,
+        fossilFuelPercentage === undefined
+          ? pvUsedLocally
+          : pvUsedLocally + nonFossilGrid
+      )
+    );
 
     return {
       solar,
@@ -330,7 +371,8 @@
       home,
       gas,
       water,
-      lowCarbon: solar,
+      lowCarbon,
+      fossilFuelPercentage,
     };
   };
 
@@ -368,6 +410,11 @@
 
     const valueEl = ensureLiveValueSpan(circle, overlay || null);
     valueEl.textContent = text;
+  };
+
+  const setContainerVisible = (container, visible) => {
+    if (!container) return;
+    container.style.display = visible ? "" : "none";
   };
 
   const setGridCircleValues = (container, returnedText, importedText) => {
@@ -438,7 +485,12 @@
       const firstTopCircle = root.querySelector(
         ".row:first-child .circle-container:first-child"
       );
-      setSimpleCircleValue(firstTopCircle, formatPower(live.lowCarbon));
+      const showLowCarbon =
+        live.fossilFuelPercentage !== undefined && live.lowCarbon > 0;
+      setContainerVisible(firstTopCircle, showLowCarbon);
+      if (showLowCarbon) {
+        setSimpleCircleValue(firstTopCircle, formatPower(live.lowCarbon));
+      }
       setSimpleCircleValue(
         root.querySelector(".circle-container.solar"),
         formatPower(live.solar)
@@ -487,6 +539,11 @@
         lineSvg.querySelectorAll("circle.solar").forEach((el) => {
           el.style.display = live.solar > 0 ? "" : "none";
         });
+        lineSvg
+          .querySelectorAll("circle.non-fossil, circle.low-carbon, circle.co2")
+          .forEach((el) => {
+            el.style.display = showLowCarbon ? "" : "none";
+          });
         lineSvg.querySelectorAll("circle.gas").forEach((el) => {
           el.style.display = live.gas.value > 0 ? "" : "none";
         });
@@ -741,6 +798,7 @@
       type: "energy-distribution",
       collection_key: ENERGY_COLLECTION_KEY,
     };
+    const compactLayout = useCompactNowLayout();
 
     const nowReplacementView = deepClone(electricityView);
     nowReplacementView.path = NOW_VIEW_PATH;
@@ -751,15 +809,18 @@
     nowReplacementView.badges = deepClone(nowView.badges || []);
     nowReplacementView.footer = undefined;
     nowReplacementView.sections = [
+      ...(compactLayout
+        ? [
+            {
+              type: "grid",
+              column_span: 1,
+              cards: [distributionCard],
+            },
+          ]
+        : []),
       {
         type: "grid",
-        column_span: 1,
-        cards: [distributionCard],
-        visibility: [SMALL_SCREEN_CONDITION],
-      },
-      {
-        type: "grid",
-        column_span: 3,
+        column_span: compactLayout ? 1 : 3,
         cards: [
           {
             title: NOW_PRIMARY_CARD_TITLE,
@@ -784,12 +845,15 @@
         ),
       },
     ];
-    nowReplacementView.sidebar = {
-      sections: [{ cards: [distributionCard] }],
-      visibility: [LARGE_SCREEN_CONDITION],
-      content_label: NOW_PRIMARY_CARD_TITLE,
-      sidebar_label: "Energieverteilung",
-    };
+    if (!compactLayout) {
+      nowReplacementView.sidebar = {
+        sections: [{ cards: [distributionCard] }],
+        content_label: NOW_PRIMARY_CARD_TITLE,
+        sidebar_label: "Energieverteilung",
+      };
+    } else {
+      delete nowReplacementView.sidebar;
+    }
     delete nowReplacementView.strategy;
     delete nowReplacementView.cards;
 

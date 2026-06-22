@@ -2,6 +2,20 @@
 
 All notable changes to this project are documented in this file.
 
+## v0.1.6 - 2026-06-22
+
+### Fixed
+
+- stabilized the `Jetzt` layout so the sidebar/content split no longer appears multiple times or disappears intermittently
+- refined the live `CO2-neutral` card logic in `Jetzt`
+- hide the live `CO2-neutral` circle when no valid source value is available
+- show and animate the live `CO2-neutral` flow only when a valid value above zero exists
+- recalculate live `CO2-neutral` using local PV usage plus the non-fossil share of current grid import
+
+### Changed
+
+- bumped frontend asset version again so Home Assistant reloads the corrected live panel code reliably
+
 ## v0.1.5 - 2026-06-22
 
 ### Fixed

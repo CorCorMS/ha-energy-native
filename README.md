@@ -14,7 +14,7 @@ HA Energy Native adds a second native Home Assistant Energy dashboard entry to t
 - native parallel Energy dashboard entry
 - enhanced Summary view with gross grid import presentation
 - live Now tab with power-focused cards
-- `Balkonkraftwerk` option inside the PV module configuration
+- `Plug-in solar system` option inside the PV module configuration
 - multilingual clone labels and Energy-setup texts with locale-aware fallback behavior
 - reuse of the original Home Assistant Energy configuration
 

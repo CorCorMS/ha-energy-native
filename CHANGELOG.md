@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented in this file.
 
+## v0.1.10 - 2026-06-22
+
+### Fixed
+
+- resized the repository and integration brand icons to a HACS-friendlier 256x256 format
+- reduced oversized branding assets that could cause poor HACS preview compatibility
+
 ## v0.1.9 - 2026-06-22
 
 ### Fixed

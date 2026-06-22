@@ -2,6 +2,22 @@
 
 All notable changes to this project are documented in this file.
 
+## v0.1.3 - 2026-06-22
+
+### Added
+
+- new repository banner based on the preferred showcase layout
+
+### Changed
+
+- banner visuals updated with current Energy clone screenshots
+- banner line routing adjusted so Energy sources converge on the HA center point
+
+### Cleaned
+
+- removed development leftovers from the custom component package
+- reduced the shipped integration files to the active runtime set only
+
 ## v0.1.2 - 2026-06-22
 
 ### Added

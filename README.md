@@ -93,7 +93,7 @@ Repository URL:
 
 - HACS category: `Integration`
 - HACS reads versions from GitHub releases
-- releases are published with tags like `v0.1.2`
+- releases are published with tags like `v0.1.3`
 - after updating in HACS, restart Home Assistant so updated frontend and backend files are loaded
 
 ## Changelog

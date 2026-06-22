@@ -2,6 +2,15 @@
 
 All notable changes to this project are documented in this file.
 
+## v0.1.4 - 2026-06-22
+
+### Changed
+
+- repository banner updated again using the preferred artwork template
+- screenshot cards in the banner replaced with the current HA Energy Native UI
+- small project logo moved to the top-right corner of the banner
+- banner line routing adjusted to follow the supplied reference layout more closely
+
 ## v0.1.3 - 2026-06-22
 
 ### Added

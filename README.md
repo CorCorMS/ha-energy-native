@@ -79,7 +79,6 @@ Repository URL:
 Important:
 
 - use `https://github.com/CorCorMS/ha-energy-native`
-- do not use `https://github.com/CorCorMS/grow-os-ha` for this integration
 
 ### Direct HACS link
 

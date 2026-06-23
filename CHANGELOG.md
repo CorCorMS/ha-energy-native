@@ -2,6 +2,26 @@
 
 All notable changes to this project are documented in this file.
 
+## v1.0.0 - 2026-06-23
+
+### Added
+
+- shipped the stable isolated clone loader for the `Jetzt` dashboard view so the clone keeps its own generated Energy state instead of depending on the later internal Home Assistant panel refresh cycle
+- added the final stable live `Leistungsfluss` / `energy-distribution` behavior now used in the production clone
+- completed multilingual clone labels and setup translations across the currently bundled language set
+
+### Fixed
+
+- fixed repeated fallback cases where the cloned `Jetzt` view could briefly jump back to an older/original Energy view after delayed internal reloads
+- fixed gas and water flow animations so they stay disabled when their live values are `0`
+- fixed layout jumps when optional nodes such as CO2-neutral and battery are hidden by keeping their layout slots stable
+- fixed clone/mobile layout switching so the live view keeps the intended structure more reliably
+
+### Changed
+
+- promoted the project to `1.0.0` as the first stable release milestone
+- removed temporary runtime debug logging from the frontend clone loader before release
+
 ## v0.1.14 - 2026-06-23
 
 ### Fixed

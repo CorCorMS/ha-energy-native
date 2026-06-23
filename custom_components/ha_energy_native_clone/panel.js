@@ -1442,13 +1442,89 @@
     );
   };
 
+  const ensureCloneRouteIsValid = (panel) => {
+    const views = panel?._lovelace?.config?.views || [];
+    const validPaths = views.map((view) => view.path).filter(Boolean);
+    const viewPath = panel?.route?.path?.split?.("/")?.[1];
+    if (!validPaths.length) return;
+    if (!viewPath || !validPaths.includes(viewPath)) {
+      if (typeof window.navigate === "function") {
+        window.navigate(`${panel.route?.prefix || `/${CLONE_URL_PATH}`}/${validPaths[0]}`, {
+          replace: true,
+        });
+      } else if (window.history?.replaceState) {
+        window.history.replaceState(
+          window.history.state,
+          "",
+          `${panel.route?.prefix || `/${CLONE_URL_PATH}`}/${validPaths[0]}`
+        );
+      }
+    } else if (panel.route) {
+      panel.route = { ...panel.route };
+    }
+  };
+
+  const finalizeCloneLovelaceState = (panel, reason = "unknown") => {
+    if (!isClonePanelHost(panel) || !panel?._lovelace?.config?.views) return;
+    const patchedFromCurrent = patchIncomingLovelaceForClone(panel, panel._lovelace);
+    if (patchedFromCurrent) {
+      panel._lovelace = deepClone(patchedFromCurrent);
+      panel.__haEnergyNativePatchedLovelace = deepClone(panel._lovelace);
+    }
+    ensureCloneRouteIsValid(panel);
+    scheduleNowReplacementEnforcement(panel, reason);
+    scheduleNowReplacementWatchdog(panel, reason);
+  };
+
+  const loadCloneConfigIsolated = async (panel, originalSetLovelace) => {
+    panel.__haEnergyNativeCloneLoadGeneration =
+      (panel.__haEnergyNativeCloneLoadGeneration || 0) + 1;
+    const generation = panel.__haEnergyNativeCloneLoadGeneration;
+    panel.__haEnergyNativeCloneLoadActive = true;
+    try {
+      panel._error = undefined;
+      await originalSetLovelace.call(panel);
+      if (generation !== panel.__haEnergyNativeCloneLoadGeneration) return;
+      finalizeCloneLovelaceState(panel, "isolated-load");
+    } catch (err) {
+      console.error("HA Energy Native: failed to load isolated clone config", err);
+      if (generation === panel.__haEnergyNativeCloneLoadGeneration) {
+        panel._error = err?.message || "Unknown error";
+      }
+    } finally {
+      if (generation === panel.__haEnergyNativeCloneLoadGeneration) {
+        panel.__haEnergyNativeCloneLoadActive = false;
+      }
+    }
+  };
+
   const patchPanelEnergy = () => {
     const tag = "ha-panel-energy";
     const Panel = customElements.get(tag);
     if (!Panel || Panel.prototype.__haEnergyNativeNowPatched) return;
 
     const originalSetLovelace = Panel.prototype._setLovelace;
+    const originalLoadConfig = Panel.prototype._loadConfig;
+    const originalReloadConfig = Panel.prototype._reloadConfig;
+
+    Panel.prototype._loadConfig = async function (...args) {
+      if (!isClonePanelHost(this)) {
+        return originalLoadConfig?.apply(this, args);
+      }
+      return loadCloneConfigIsolated(this, originalSetLovelace);
+    };
+
+    Panel.prototype._reloadConfig = function (...args) {
+      if (!isClonePanelHost(this)) {
+        return originalReloadConfig?.apply(this, args);
+      }
+      return this._loadConfig(...args);
+    };
+
     Panel.prototype._setLovelace = async function (...args) {
+      if (isClonePanelHost(this) && !args.length && !this.__haEnergyNativeCloneLoadActive) {
+        return loadCloneConfigIsolated(this, originalSetLovelace);
+      }
       const nextArgs = [...args];
       if (nextArgs[0]) {
         nextArgs[0] = patchIncomingLovelaceForClone(this, nextArgs[0]);
@@ -1457,18 +1533,7 @@
 
       try {
         if (!isClonePanelHost(this) || !this._lovelace?.config?.views) return;
-        const patchedFromCurrent = patchIncomingLovelaceForClone(
-          this,
-          this._lovelace
-        );
-        if (patchedFromCurrent) {
-          this._lovelace = deepClone(patchedFromCurrent);
-        }
-        if (this.__haEnergyNativePatchedLovelace) {
-          this._lovelace = deepClone(this.__haEnergyNativePatchedLovelace);
-        }
-        scheduleNowReplacementEnforcement(this, "_setLovelace");
-        scheduleNowReplacementWatchdog(this, "_setLovelace");
+        finalizeCloneLovelaceState(this, "_setLovelace");
       } catch (err) {
         console.warn("HA Energy Native: failed to build Jetzt replacement", err);
       }

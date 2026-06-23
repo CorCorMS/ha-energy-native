@@ -107,6 +107,15 @@ Important:
 
 See [CHANGELOG.md](https://github.com/CorCorMS/ha-energy-native/blob/main/CHANGELOG.md) for release history.
 
+## Roadmap
+
+Planned next steps for HA Energy Native:
+
+- heat pump integration
+- extended live energy flow consumers
+- more Energy-setup-aware device grouping
+- additional multilingual refinements
+
 ## Support the project
 
 If you want to support development:

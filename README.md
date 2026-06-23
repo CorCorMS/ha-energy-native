@@ -37,10 +37,6 @@ Summary dashboard:
   </tr>
 </table>
 
-Sources table:
-
-<img src="https://raw.githubusercontent.com/CorCorMS/ha-energy-native/main/assets/screenshots/readme/sources-table-focus.png" alt="Sources table" width="52%">
-
 ## Uses your existing Home Assistant Energy configuration
 
 HA Energy Native does not require you to rebuild the Energy dashboard from scratch.

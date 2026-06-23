@@ -2,6 +2,19 @@
 
 All notable changes to this project are documented in this file.
 
+## v0.1.14 - 2026-06-23
+
+### Fixed
+
+- hardened the cloned `Jetzt` loader so the custom Now view is re-applied even when Home Assistant internally regenerates the Energy dashboard state without passing an external Lovelace config object
+- added an extra render-time safeguard so the clone keeps its isolated Now view instead of occasionally falling back to the original view after delayed HA reload cycles
+- stopped gas and water connector animations from remaining visible when their live flow values are `0`
+- kept the CO2 and battery slots layout-stable when hidden so other circles no longer jump into their positions
+
+### Changed
+
+- bumped the frontend asset version again so the latest loader and layout fixes are reliably reloaded by Home Assistant
+
 ## v0.1.13 - 2026-06-23
 
 ### Changed

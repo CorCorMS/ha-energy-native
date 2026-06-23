@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented in this file.
 
+## v1.0.1 - 2026-06-23
+
+### Fixed
+
+- aligned gas and water live-flow animation behavior with the displayed one-decimal rounding so connectors stay still when the UI shows `0.0`
+- preserved the native Home Assistant Lovelace runtime methods while patching clone views, which restores the admin/edit path more safely than deep-copying the entire Lovelace state object
+- improved clone panel stability after the 1.0.0 release by keeping the lighter native load path while still patching the custom `Jetzt` view
+
 ## v1.0.0 - 2026-06-23
 
 ### Added

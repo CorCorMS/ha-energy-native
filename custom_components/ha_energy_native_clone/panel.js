@@ -249,6 +249,15 @@
   const deepClone = (value) =>
     value === undefined ? value : JSON.parse(JSON.stringify(value));
 
+  const cloneLovelaceState = (lovelace) => {
+    if (!lovelace) return lovelace;
+    return {
+      ...lovelace,
+      config: deepClone(lovelace.config),
+      rawConfig: deepClone(lovelace.rawConfig ?? lovelace.config),
+    };
+  };
+
   const isClonePanel = (panel) => panel?.url_path === CLONE_URL_PATH;
   const isClonePanelHost = (host) =>
     host?.panel?.url_path === CLONE_URL_PATH ||
@@ -256,6 +265,22 @@
     window.location.pathname.includes(`/${CLONE_URL_PATH}`);
   const isNowCloneRoute = () =>
     window.location.pathname.includes(`/${CLONE_URL_PATH}/${NOW_VIEW_PATH}`);
+  const navigateWithinHA = (path, replace = false) => {
+    try {
+      if (replace) {
+        window.history.replaceState(window.history.state, "", path);
+      } else {
+        window.history.pushState(null, "", path);
+      }
+      window.dispatchEvent(
+        new CustomEvent("location-changed", {
+          detail: { replace },
+        })
+      );
+    } catch (err) {
+      window.location.assign(path);
+    }
+  };
   const useCompactNowLayout = () =>
     window.matchMedia?.("(max-width: 899px)")?.matches ?? window.innerWidth < 900;
   const NOW_LAYOUT_MEDIA_QUERY = "(max-width: 899px)";
@@ -689,6 +714,12 @@
     });
   };
 
+  const hasVisibleFlow = (value, fractionDigits = 1) => {
+    const numeric = Math.abs(Number(value) || 0);
+    const threshold = 0.5 / Math.pow(10, fractionDigits);
+    return numeric >= threshold;
+  };
+
   const updateHomeRing = (container, live) => {
     if (!container) return;
     const circle = container.querySelector(".circle");
@@ -906,14 +937,16 @@
         }
       }
 
+      const showGasFlow = hasVisibleFlow(live.gas.value, 1);
+      const showWaterFlow = hasVisibleFlow(live.water.value, 1);
       setConnectorAnimationVisibility(
         root.querySelector(".circle-container.gas"),
-        live.gas.value > 0
+        showGasFlow
       );
       root
         .querySelectorAll(".circle-container.water")
         .forEach((container) =>
-          setConnectorAnimationVisibility(container, live.water.value > 0)
+          setConnectorAnimationVisibility(container, showWaterFlow)
         );
 
       const lineSvg = root.querySelector(".lines svg");
@@ -934,8 +967,8 @@
           });
         const showBatteryFlow =
           hasBattery && (live.toBattery > 0 || live.fromBattery > 0);
-        setLineGroupVisibility(lineSvg, "gas", live.gas.value > 0);
-        setLineGroupVisibility(lineSvg, "water", live.water.value > 0);
+        setLineGroupVisibility(lineSvg, "gas", showGasFlow);
+        setLineGroupVisibility(lineSvg, "water", showWaterFlow);
         setLineGroupVisibility(lineSvg, "battery", showBatteryFlow);
       }
     };
@@ -1325,7 +1358,7 @@
         views: newViews,
       },
     };
-    panel.__haEnergyNativePatchedLovelace = deepClone(panel._lovelace);
+    panel.__haEnergyNativePatchedLovelace = cloneLovelaceState(panel._lovelace);
     panel.__haEnergyNativeAppliedLayout = useCompactNowLayout()
       ? "compact"
       : "wide";
@@ -1375,7 +1408,7 @@
         views: patchedViews,
       },
     };
-    panel.__haEnergyNativePatchedLovelace = deepClone(patched);
+    panel.__haEnergyNativePatchedLovelace = cloneLovelaceState(patched);
     return patched;
   };
 
@@ -1394,7 +1427,7 @@
     }
     applyNowReplacementToPanel(panel);
     if (panel.__haEnergyNativePatchedLovelace) {
-      panel._lovelace = deepClone(panel.__haEnergyNativePatchedLovelace);
+      panel._lovelace = cloneLovelaceState(panel.__haEnergyNativePatchedLovelace);
     }
     panel.requestUpdate?.();
   };
@@ -1427,7 +1460,7 @@
       panel.__haEnergyNativeWatchdogTimers = [];
     }
     panel.__haEnergyNativeWatchdogTimers.forEach((timer) => clearTimeout(timer));
-    panel.__haEnergyNativeWatchdogTimers = [250, 1000].map((delay) =>
+    panel.__haEnergyNativeWatchdogTimers = [600].map((delay) =>
       window.setTimeout(() => {
         if (!isClonePanelHost(panel) || !panel._lovelace?.config?.views) return;
         try {
@@ -1448,17 +1481,10 @@
     const viewPath = panel?.route?.path?.split?.("/")?.[1];
     if (!validPaths.length) return;
     if (!viewPath || !validPaths.includes(viewPath)) {
-      if (typeof window.navigate === "function") {
-        window.navigate(`${panel.route?.prefix || `/${CLONE_URL_PATH}`}/${validPaths[0]}`, {
-          replace: true,
-        });
-      } else if (window.history?.replaceState) {
-        window.history.replaceState(
-          window.history.state,
-          "",
-          `${panel.route?.prefix || `/${CLONE_URL_PATH}`}/${validPaths[0]}`
-        );
-      }
+      navigateWithinHA(
+        `${panel.route?.prefix || `/${CLONE_URL_PATH}`}/${validPaths[0]}`,
+        true
+      );
     } else if (panel.route) {
       panel.route = { ...panel.route };
     }
@@ -1468,34 +1494,12 @@
     if (!isClonePanelHost(panel) || !panel?._lovelace?.config?.views) return;
     const patchedFromCurrent = patchIncomingLovelaceForClone(panel, panel._lovelace);
     if (patchedFromCurrent) {
-      panel._lovelace = deepClone(patchedFromCurrent);
-      panel.__haEnergyNativePatchedLovelace = deepClone(panel._lovelace);
+      panel._lovelace = cloneLovelaceState(patchedFromCurrent);
+      panel.__haEnergyNativePatchedLovelace = cloneLovelaceState(panel._lovelace);
     }
     ensureCloneRouteIsValid(panel);
     scheduleNowReplacementEnforcement(panel, reason);
     scheduleNowReplacementWatchdog(panel, reason);
-  };
-
-  const loadCloneConfigIsolated = async (panel, originalSetLovelace) => {
-    panel.__haEnergyNativeCloneLoadGeneration =
-      (panel.__haEnergyNativeCloneLoadGeneration || 0) + 1;
-    const generation = panel.__haEnergyNativeCloneLoadGeneration;
-    panel.__haEnergyNativeCloneLoadActive = true;
-    try {
-      panel._error = undefined;
-      await originalSetLovelace.call(panel);
-      if (generation !== panel.__haEnergyNativeCloneLoadGeneration) return;
-      finalizeCloneLovelaceState(panel, "isolated-load");
-    } catch (err) {
-      console.error("HA Energy Native: failed to load isolated clone config", err);
-      if (generation === panel.__haEnergyNativeCloneLoadGeneration) {
-        panel._error = err?.message || "Unknown error";
-      }
-    } finally {
-      if (generation === panel.__haEnergyNativeCloneLoadGeneration) {
-        panel.__haEnergyNativeCloneLoadActive = false;
-      }
-    }
   };
 
   const patchPanelEnergy = () => {
@@ -1504,27 +1508,8 @@
     if (!Panel || Panel.prototype.__haEnergyNativeNowPatched) return;
 
     const originalSetLovelace = Panel.prototype._setLovelace;
-    const originalLoadConfig = Panel.prototype._loadConfig;
-    const originalReloadConfig = Panel.prototype._reloadConfig;
-
-    Panel.prototype._loadConfig = async function (...args) {
-      if (!isClonePanelHost(this)) {
-        return originalLoadConfig?.apply(this, args);
-      }
-      return loadCloneConfigIsolated(this, originalSetLovelace);
-    };
-
-    Panel.prototype._reloadConfig = function (...args) {
-      if (!isClonePanelHost(this)) {
-        return originalReloadConfig?.apply(this, args);
-      }
-      return this._loadConfig(...args);
-    };
 
     Panel.prototype._setLovelace = async function (...args) {
-      if (isClonePanelHost(this) && !args.length && !this.__haEnergyNativeCloneLoadActive) {
-        return loadCloneConfigIsolated(this, originalSetLovelace);
-      }
       const nextArgs = [...args];
       if (nextArgs[0]) {
         nextArgs[0] = patchIncomingLovelaceForClone(this, nextArgs[0]);
@@ -1578,14 +1563,6 @@
         window.matchMedia?.(NOW_LAYOUT_MEDIA_QUERY) || null;
       this.__haEnergyNativeMediaHandler = () =>
         this.__haEnergyNativeResizeHandler?.();
-      window.addEventListener("resize", this.__haEnergyNativeResizeHandler, {
-        passive: true,
-      });
-      window.addEventListener(
-        "orientationchange",
-        this.__haEnergyNativeResizeHandler,
-        { passive: true }
-      );
       window.addEventListener("pageshow", this.__haEnergyNativeResizeHandler, {
         passive: true,
       });
@@ -1616,11 +1593,6 @@
         this.__haEnergyNativeEnforceTimer = undefined;
       }
       if (this.__haEnergyNativeResizeHandler) {
-        window.removeEventListener("resize", this.__haEnergyNativeResizeHandler);
-        window.removeEventListener(
-          "orientationchange",
-          this.__haEnergyNativeResizeHandler
-        );
         window.removeEventListener(
           "pageshow",
           this.__haEnergyNativeResizeHandler
@@ -1654,7 +1626,7 @@
             (view) => view.path === NOW_VIEW_PATH
           )?.ha_energy_native_clone_now_revision !== NOW_REPLACEMENT_REVISION
         ) {
-          this._lovelace = deepClone(this.__haEnergyNativePatchedLovelace);
+          this._lovelace = cloneLovelaceState(this.__haEnergyNativePatchedLovelace);
         }
         const currentNowView = this._lovelace.config.views.find(
           (view) => view.path === NOW_VIEW_PATH
@@ -1667,8 +1639,9 @@
         ) {
           return;
         }
-        scheduleNowReplacementEnforcement(this, "updated");
-        scheduleNowReplacementWatchdog(this, "updated");
+        if (!this.__haEnergyNativeEnforceTimer) {
+          scheduleNowReplacementEnforcement(this, "updated");
+        }
       } catch (err) {
         console.warn("HA Energy Native: failed to enforce Jetzt loader", err);
       }
@@ -1681,15 +1654,24 @@
           (view) => view.path === NOW_VIEW_PATH
         )?.ha_energy_native_clone_now_revision;
         if (currentRevision !== NOW_REPLACEMENT_REVISION) {
-          this._lovelace = deepClone(this.__haEnergyNativePatchedLovelace);
+          this._lovelace = cloneLovelaceState(this.__haEnergyNativePatchedLovelace);
         }
       }
       return originalRender?.apply(this, args);
     };
 
-    const originalNavigateConfig = Panel.prototype._navigateConfig;
-    Panel.prototype._navigateConfig = function (...args) {
-      return originalNavigateConfig?.apply(this, args);
+    Panel.prototype._navigateConfig = function (ev) {
+      ev?.stopPropagation?.();
+      const viewPath = this.route?.path?.split?.("/")?.[1] || "";
+      const tabMap = {
+        overview: "electricity",
+        electricity: "electricity",
+        gas: "gas",
+        water: "water",
+        now: "electricity",
+      };
+      const tab = tabMap[viewPath] || "electricity";
+      navigateWithinHA(`/config/energy/${tab}?historyBack=1`);
     };
 
     Panel.prototype.__haEnergyNativeNowPatched = true;

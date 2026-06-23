@@ -5,7 +5,7 @@ parts shipped in this repository.
 """
 
 DOMAIN = "ha_energy_native_clone"
-ASSET_VERSION = "2026.06.23.75"
+ASSET_VERSION = "2026.06.23.80"
 
 DEFAULT_TITLE = "Energie Native"
 DEFAULT_ICON = "mdi:lightning-bolt-circle"

@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented in this file.
 
+## v1.0.2 - 2026-06-24
+
+### Fixed
+
+- matched gas and water animation enablement to the visible one-decimal UI output, preventing connector motion when the dashboard displays `0.0`
+- updated the deployed frontend asset bundle so the live-flow animation fix is consistently picked up after Home Assistant reloads
+
 ## v1.0.1 - 2026-06-23
 
 ### Fixed
